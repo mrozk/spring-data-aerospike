@@ -31,6 +31,7 @@ import org.springframework.data.aerospike.mapping.AerospikePersistentProperty;
 import org.springframework.data.convert.EntityInstantiator;
 import org.springframework.data.convert.EntityInstantiators;
 import org.springframework.data.convert.EntityReader;
+import org.springframework.data.convert.TypeAliasAccessor;
 import org.springframework.data.convert.TypeMapper;
 import org.springframework.data.mapping.PersistentPropertyAccessor;
 import org.springframework.data.mapping.PreferredConstructor;
@@ -50,15 +51,19 @@ import org.springframework.util.CollectionUtils;
 public class MappingAerospikeReadConverter implements EntityReader<Object, AerospikeReadData> {
 
 	private final EntityInstantiators entityInstantiators;
+	private final TypeAliasAccessor typeAliasAccessor;
 	private final TypeMapper<Map<String, Object>> typeMapper;
 	private final AerospikeMappingContext mappingContext;
 	private final CustomConversions conversions;
 	private final GenericConversionService conversionService;
 
-	public MappingAerospikeReadConverter(EntityInstantiators entityInstantiators, TypeMapper<Map<String, Object>> typeMapper,
-										 AerospikeMappingContext mappingContext, CustomConversions conversions,
-										 GenericConversionService conversionService) {
+	public MappingAerospikeReadConverter(EntityInstantiators entityInstantiators,
+										 TypeAliasAccessor typeAliasAccessor,
+										 TypeMapper<Map<String, Object>> typeMapper,
+                                         AerospikeMappingContext mappingContext, CustomConversions conversions,
+                                         GenericConversionService conversionService) {
 		this.entityInstantiators = entityInstantiators;
+		this.typeAliasAccessor = typeAliasAccessor;
 		this.typeMapper = typeMapper;
 		this.mappingContext = mappingContext;
 		this.conversions = conversions;
@@ -148,9 +153,16 @@ public class MappingAerospikeReadConverter implements EntityReader<Object, Aeros
 	private <T> T convertCustomType(Map<String, Object> source, TypeInformation<?> propertyType) {
 		TypeInformation<?> typeToUse = typeMapper.readType(source, propertyType);
 		AerospikePersistentEntity<?> entity = mappingContext.getPersistentEntity(typeToUse);
+		if (shouldDefaultToMap(source, entity)) {
+			return (T) source;
+		}
 		RecordReadingPropertyValueProvider propertyValueProvider = new RecordReadingPropertyValueProvider(source);
 		PersistentPropertyAccessor persistentPropertyAccessor = getConvertingPropertyAccessor(entity, propertyValueProvider);
 		return (T) convertProperties(entity, propertyValueProvider, persistentPropertyAccessor);
+	}
+
+	private boolean shouldDefaultToMap(Map<String, Object> source, AerospikePersistentEntity<?> entity) {
+		return entity == null && !typeAliasAccessor.readAliasFrom(source).isPresent();
 	}
 
 	private <R> R convertMap(Map<String, Object> source, TypeInformation<?> propertyType) {

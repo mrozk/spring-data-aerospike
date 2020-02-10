@@ -21,7 +21,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.Value;
 import org.joda.time.DateTime;
@@ -116,6 +115,34 @@ public class SampleClasses {
 		final long id;
 		final Map<String, T> mapWithNonSimpleValue;
 	}
+
+	@Document
+	@Data
+	public static class CustomTypeWithListAndMap {
+		final List<Object> listOfObjects;
+		final Map<String, Object> mapWithObjectValue;
+	}
+
+	@Document
+	@Data
+	public static class CustomTypeWithCustomType {
+		final CustomTypeWithListAndMap field;
+	}
+
+	@Document
+	@Value
+	public static class CustomTypeWithListAndMapImmutable {
+		final List<Object> listOfObjects;
+		final Map<String, Object> mapWithObjectValue;
+	}
+
+	@Document
+	@Value
+	public static class CustomTypeWithCustomTypeImmutable {
+		final CustomTypeWithListAndMapImmutable field;
+	}
+
+
 
 	@Document
 	@Data

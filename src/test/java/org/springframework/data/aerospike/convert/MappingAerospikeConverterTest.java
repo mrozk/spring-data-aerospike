@@ -65,6 +65,10 @@ import org.springframework.data.aerospike.SampleClasses.ComplexIdToStringConvert
 import org.springframework.data.aerospike.SampleClasses.Contact;
 import org.springframework.data.aerospike.SampleClasses.ContainerOfCustomFieldNames;
 import org.springframework.data.aerospike.SampleClasses.CustomFieldNames;
+import org.springframework.data.aerospike.SampleClasses.CustomTypeWithListAndMap;
+import org.springframework.data.aerospike.SampleClasses.CustomTypeWithListAndMapImmutable;
+import org.springframework.data.aerospike.SampleClasses.CustomTypeWithCustomType;
+import org.springframework.data.aerospike.SampleClasses.CustomTypeWithCustomTypeImmutable;
 import org.springframework.data.aerospike.SampleClasses.DocumentWithByteArray;
 import org.springframework.data.aerospike.SampleClasses.DocumentWithDefaultConstructor;
 import org.springframework.data.aerospike.SampleClasses.DocumentWithExpirationAnnotation;
@@ -97,6 +101,7 @@ import com.aerospike.client.Bin;
 import com.aerospike.client.Key;
 import com.aerospike.client.Record;
 import com.aerospike.client.Value;
+import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 
 public class MappingAerospikeConverterTest {
 
@@ -253,6 +258,82 @@ public class MappingAerospikeConverterTest {
 				new Bin("@_class", MapWithGenericValue.class.getName())
 		);
 	}
+
+	@Test
+	public void shouldReadListsAndMapsWithObjectValue() throws Exception {
+		Map<String, Object> bins = of(
+				"listOfObjects", ImmutableList.of("firstItem",
+						of("keyInList", "valueInList"),
+						of("street", of("name", "Gogolya str.", "number", 15, "@_class", Street.class.getName()),
+						"apartment", 567, "@_class", Address.class.getName())),
+				"mapWithObjectValue", of("map", of("key", "value")),
+				"@_class", CustomTypeWithListAndMap.class.getName(),
+				"@user_key", "10"
+		);
+		AerospikeReadData forRead = AerospikeReadData.forRead(new Key(NAMESPACE, SIMPLESET, 10L), record(bins));
+
+		CustomTypeWithListAndMap actual = converter.read(CustomTypeWithListAndMap.class, forRead);
+
+		CustomTypeWithListAndMap expected = new CustomTypeWithListAndMap(ImmutableList.of("firstItem",
+				of("keyInList", "valueInList"),
+				new Address(new Street("Gogolya str.", 15), 567)),
+				of("map", of("key", "value")));
+		assertThat(actual).isEqualTo(expected);
+	}
+
+    @Test
+    public void shouldReadCustomTypeWithCustomType() throws Exception {
+        Map<String, Object> bins = of("field", of(
+                "listOfObjects", ImmutableList.of("firstItem", of("keyInList", "valueInList")),
+                "mapWithObjectValue", of("map", of("key", "value"),
+						"address", of("street", of("name", "Gogolya str.", "number", 15, "@_class", Street.class.getName()),
+								"apartment", 567, "@_class", Address.class.getName())),
+                "@_class", CustomTypeWithCustomType.class.getName(),
+                "@user_key", "10"
+        ));
+        AerospikeReadData forRead = AerospikeReadData.forRead(new Key(NAMESPACE, SIMPLESET, 10L), record(bins));
+
+        CustomTypeWithCustomType actual = converter.read(CustomTypeWithCustomType.class, forRead);
+
+        CustomTypeWithCustomType expected = new CustomTypeWithCustomType(new CustomTypeWithListAndMap(ImmutableList.of("firstItem", of("keyInList", "valueInList")),
+                of("map", of("key", "value"),
+						"address", new Address(new Street("Gogolya str.", 15), 567))));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldReadListsAndMapsWithObjectImmutable() throws Exception {
+        Map<String, Object> bins = of(
+                "listOfObjects", ImmutableList.of("firstItem", of("keyInList", "valueInList")),
+                "mapWithObjectValue", of("map", of("key", "value")),
+                "@_class", CustomTypeWithListAndMapImmutable.class.getName(),
+                "@user_key", "10"
+        );
+        AerospikeReadData forRead = AerospikeReadData.forRead(new Key(NAMESPACE, SIMPLESET, 10L), record(bins));
+
+        CustomTypeWithListAndMapImmutable actual = converter.read(CustomTypeWithListAndMapImmutable.class, forRead);
+
+        CustomTypeWithListAndMapImmutable expected = new CustomTypeWithListAndMapImmutable(ImmutableList.of("firstItem", of("keyInList", "valueInList")),
+                of("map", of("key", "value")));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldReadCustomTypeWithCustomTypeImmutable() throws Exception {
+        Map<String, Object> bins = of("field", of(
+                "listOfObjects", ImmutableList.of("firstItem", of("keyInList", "valueInList")),
+                "mapWithObjectValue", of("map", of("key", "value")),
+                "@_class", CustomTypeWithCustomTypeImmutable.class.getName(),
+                "@user_key", "10"
+        ));
+        AerospikeReadData forRead = AerospikeReadData.forRead(new Key(NAMESPACE, SIMPLESET, 10L), record(bins));
+
+        CustomTypeWithCustomTypeImmutable actual = converter.read(CustomTypeWithCustomTypeImmutable.class, forRead);
+
+        CustomTypeWithCustomTypeImmutable expected = new CustomTypeWithCustomTypeImmutable(new CustomTypeWithListAndMapImmutable(ImmutableList.of("firstItem", of("keyInList", "valueInList")),
+                of("map", of("key", "value"))));
+        assertThat(actual).isEqualTo(expected);
+    }
 
 	@Test
 	public void shouldReadMapWithNonSimpleValue() throws Exception {
