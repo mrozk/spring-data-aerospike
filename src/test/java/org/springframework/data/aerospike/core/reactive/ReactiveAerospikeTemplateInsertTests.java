@@ -173,8 +173,9 @@ public class ReactiveAerospikeTemplateInsertTests extends BaseReactiveIntegratio
         Person person = new Person(id, "Amol");
         person.setAge(28);
         reactiveTemplate.insert(person).block();
+        assertThat(findById(id, Person.class)).isEqualTo(person);
 
-        StepVerifier.create(reactiveTemplate.insertAll(asList(person, person)))
+        StepVerifier.create(reactiveTemplate.insertAll(asList(person)))
                 .expectError(DuplicateKeyException.class)
                 .verify();
     }
