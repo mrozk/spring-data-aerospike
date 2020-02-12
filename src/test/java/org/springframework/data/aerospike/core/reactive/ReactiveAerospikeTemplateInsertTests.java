@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ReactiveAerospikeTemplateInsertTests extends BaseReactiveIntegrationTests {
@@ -154,5 +155,27 @@ public class ReactiveAerospikeTemplateInsertTests extends BaseReactiveIntegratio
 
         assertThat(duplicateKeyCounter.intValue()).isEqualTo(numberOfConcurrentSaves - 1);
 
+    }
+
+    @Test
+    public void insertAll_shouldInsertAllDocuments() {
+        Person customer1 = new Person(nextId(), "Dave");
+        Person customer2 = new Person(nextId(), "James");
+
+        reactiveTemplate.insertAll(asList(customer1, customer2)).blockLast();
+
+        assertThat(findById(customer1.getId(), Person.class)).isEqualTo(customer1);
+        assertThat(findById(customer2.getId(), Person.class)).isEqualTo(customer2);
+    }
+
+    @Test
+    public void insertAll_rejectsDuplicateId() {
+        Person person = new Person(id, "Amol");
+        person.setAge(28);
+        reactiveTemplate.insert(person).block();
+
+        StepVerifier.create(reactiveTemplate.insertAll(asList(person, person)))
+                .expectError(DuplicateKeyException.class)
+                .verify();
     }
 }
