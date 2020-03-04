@@ -11,6 +11,7 @@ import org.springframework.data.aerospike.SampleClasses.DocumentWithByteArray;
 import org.springframework.data.aerospike.SampleClasses.VersionedClass;
 import org.springframework.data.aerospike.sample.Person;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
 import java.util.Arrays;
@@ -63,7 +64,7 @@ public class ReactiveAerospikeTemplateInsertTests extends BaseReactiveIntegratio
     public void insertsAndFindsDocumentWithByteArrayField() {
         DocumentWithByteArray document = new DocumentWithByteArray(id, new byte[]{1, 0, 0, 1, 1, 1, 0, 0});
 
-        reactiveTemplate.insert(document).block();
+        reactiveTemplate.insert(document).subscribeOn(Schedulers.parallel()).block();
 
         DocumentWithByteArray result = findById(id, DocumentWithByteArray.class);
         assertThat(result).isEqualTo(document);
@@ -73,7 +74,7 @@ public class ReactiveAerospikeTemplateInsertTests extends BaseReactiveIntegratio
     public void insertsDocumentWithNullFields() {
         VersionedClass document = new VersionedClass(id, null);
 
-        reactiveTemplate.insert(document).block();
+        reactiveTemplate.insert(document).subscribeOn(Schedulers.parallel()).block();
 
         assertThat(document.getField()).isNull();
     }
@@ -82,7 +83,7 @@ public class ReactiveAerospikeTemplateInsertTests extends BaseReactiveIntegratio
     public void insertsDocumentWithZeroVersionIfThereIsNoDocumentWithSameKey() {
         VersionedClass document = new VersionedClass(id, "any");
 
-        reactiveTemplate.insert(document).block();
+        reactiveTemplate.insert(document).subscribeOn(Schedulers.parallel()).block();
 
         assertThat(document.getVersion()).isEqualTo(1);
     }
@@ -91,7 +92,7 @@ public class ReactiveAerospikeTemplateInsertTests extends BaseReactiveIntegratio
     public void insertsDocumentWithVersionGreaterThanZeroIfThereIsNoDocumentWithSameKey() {
         VersionedClass document = new VersionedClass(id, "any", 5L);
 
-        reactiveTemplate.insert(document).block();
+        reactiveTemplate.insert(document).subscribeOn(Schedulers.parallel()).block();
 
         assertThat(document.getVersion()).isEqualTo(1);
     }
@@ -100,8 +101,8 @@ public class ReactiveAerospikeTemplateInsertTests extends BaseReactiveIntegratio
     public void throwsExceptionForDuplicateId() {
         Person person = new Person(id, "Amol", 28);
 
-        reactiveTemplate.insert(person).block();
-        StepVerifier.create(reactiveTemplate.insert(person))
+        reactiveTemplate.insert(person).subscribeOn(Schedulers.parallel()).block();
+        StepVerifier.create(reactiveTemplate.insert(person).subscribeOn(Schedulers.parallel()))
                 .expectError(DuplicateKeyException.class)
                 .verify();
     }
@@ -110,8 +111,8 @@ public class ReactiveAerospikeTemplateInsertTests extends BaseReactiveIntegratio
     public void throwsExceptionForDuplicateIdForVersionedDocument() {
         VersionedClass document = new VersionedClass(id, "any", 5L);
 
-        reactiveTemplate.insert(document).block();
-        StepVerifier.create(reactiveTemplate.insert(document))
+        reactiveTemplate.insert(document).subscribeOn(Schedulers.parallel()).block();
+        StepVerifier.create(reactiveTemplate.insert(document).subscribeOn(Schedulers.parallel()))
                 .expectError(DuplicateKeyException.class)
                 .verify();
     }
@@ -126,6 +127,7 @@ public class ReactiveAerospikeTemplateInsertTests extends BaseReactiveIntegratio
             long counterValue = counter.incrementAndGet();
             String data = "value-" + counterValue;
             reactiveTemplate.insert(new VersionedClass(id, data))
+                    .subscribeOn(Schedulers.parallel())
                     .onErrorResume(DuplicateKeyException.class, e -> {
                         duplicateKeyCounter.incrementAndGet();
                         return Mono.empty();
@@ -146,6 +148,7 @@ public class ReactiveAerospikeTemplateInsertTests extends BaseReactiveIntegratio
             long counterValue = counter.incrementAndGet();
             String data = "value-" + counterValue;
             reactiveTemplate.insert(new Person(id, data, 28))
+                    .subscribeOn(Schedulers.parallel())
                     .onErrorResume(DuplicateKeyException.class, e -> {
                         duplicateKeyCounter.incrementAndGet();
                         return Mono.empty();

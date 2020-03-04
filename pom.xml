@@ -33,6 +33,7 @@
         <joda-time.version>2.10.5</joda-time.version>
         <embedded-aerospike.version>1.33</embedded-aerospike.version>
         <awaitility.version>4.0.1</awaitility.version>
+        <blockhound.version>1.0.2.RELEASE</blockhound.version>
     </properties>
 
     <licenses>
@@ -244,6 +245,14 @@
             <groupId>org.awaitility</groupId>
             <artifactId>awaitility</artifactId>
             <version>${awaitility.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!--Needed for tracking blocking calls in reactive application https://github.com/reactor/BlockHound -->
+        <dependency>
+            <groupId>io.projectreactor.tools</groupId>
+            <artifactId>blockhound</artifactId>
+            <version>${blockhound.version}</version>
             <scope>test</scope>
         </dependency>
 

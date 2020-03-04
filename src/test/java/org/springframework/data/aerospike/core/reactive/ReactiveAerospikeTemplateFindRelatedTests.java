@@ -6,6 +6,7 @@ import org.springframework.data.aerospike.SampleClasses.DocumentWithTouchOnRead;
 import org.springframework.data.aerospike.SampleClasses.DocumentWithTouchOnReadAndExpirationProperty;
 import org.springframework.data.aerospike.core.ReactiveAerospikeTemplate;
 import org.springframework.data.aerospike.sample.Person;
+import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
 import java.util.Arrays;
@@ -27,7 +28,9 @@ public class ReactiveAerospikeTemplateFindRelatedTests extends BaseReactiveInteg
         Person person = new Person(id, "Dave", "Matthews");
         StepVerifier.create(reactiveTemplate.save(person)).expectNext(person).verifyComplete();
 
-        StepVerifier.create(reactiveTemplate.findById(id, Person.class)).consumeNextWith(actual -> {
+        StepVerifier.create(reactiveTemplate.findById(id, Person.class)
+                .subscribeOn(Schedulers.parallel())
+        ).consumeNextWith(actual -> {
             assertThat(actual.getFirstName()).isEqualTo(person.getFirstName());
             assertThat(actual.getLastName()).isEqualTo(person.getLastName());
         }).verifyComplete();
@@ -35,13 +38,16 @@ public class ReactiveAerospikeTemplateFindRelatedTests extends BaseReactiveInteg
 
     @Test
     public void findById_shouldReturnNullForNonExistingKey() {
-        StepVerifier.create(reactiveTemplate.findById("dave-is-absent", Person.class))
+        StepVerifier.create(reactiveTemplate.findById("dave-is-absent", Person.class)
+                .subscribeOn(Schedulers.parallel())
+        )
                 .expectNextCount(0).verifyComplete();
     }
 
     @Test
     public void findById_shouldReturnNullForNonExistingKeyIfTouchOnReadSetToTrue() {
-        StepVerifier.create(reactiveTemplate.findById("foo-is-absent", DocumentWithTouchOnRead.class))
+        StepVerifier.create(reactiveTemplate.findById("foo-is-absent", DocumentWithTouchOnRead.class)
+                .subscribeOn(Schedulers.parallel()))
                 .expectNextCount(0).verifyComplete();
 
     }
@@ -51,9 +57,9 @@ public class ReactiveAerospikeTemplateFindRelatedTests extends BaseReactiveInteg
         DocumentWithTouchOnRead document = new DocumentWithTouchOnRead(id, 1);
         StepVerifier.create(reactiveTemplate.save(document)).expectNext(document).verifyComplete();
 
-        StepVerifier.create(reactiveTemplate.findById(document.getId(), DocumentWithTouchOnRead.class)).consumeNextWith(actual -> {
-            assertThat(actual.getVersion()).isEqualTo(document.getVersion() + 1);
-        }).verifyComplete();
+        StepVerifier.create(reactiveTemplate.findById(document.getId(), DocumentWithTouchOnRead.class)
+                .subscribeOn(Schedulers.parallel()))
+                .consumeNextWith(actual -> assertThat(actual.getVersion()).isEqualTo(document.getVersion() + 1)).verifyComplete();
     }
 
     @Test
@@ -61,14 +67,16 @@ public class ReactiveAerospikeTemplateFindRelatedTests extends BaseReactiveInteg
         DocumentWithTouchOnReadAndExpirationProperty document = new DocumentWithTouchOnReadAndExpirationProperty(id, EXPIRATION_ONE_MINUTE);
         reactiveTemplate.insert(document).block();
 
-        assertThatThrownBy(() -> reactiveTemplate.findById(document.getId(), DocumentWithTouchOnReadAndExpirationProperty.class))
+        assertThatThrownBy(() -> reactiveTemplate.findById(document.getId(), DocumentWithTouchOnReadAndExpirationProperty.class)
+          .subscribeOn(Schedulers.parallel()))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Touch on read is not supported for entity without expiration property");
     }
 
     @Test
     public void findByIds_shouldReturnEmptyList() {
-        StepVerifier.create(reactiveTemplate.findByIds(Collections.emptyList(), Person.class))
+        StepVerifier.create(reactiveTemplate.findByIds(Collections.emptyList(), Person.class)
+                .subscribeOn(Schedulers.parallel()))
                 .expectNextCount(0)
                 .verifyComplete();
     }
@@ -81,7 +89,9 @@ public class ReactiveAerospikeTemplateFindRelatedTests extends BaseReactiveInteg
         reactiveTemplate.insertAll(Arrays.asList(customer1, customer2, customer3)).blockLast();
 
         List<String> ids = Arrays.asList("unknown", customer1.getId(), customer2.getId());
-        List<Person> actual = reactiveTemplate.findByIds(ids, Person.class).collectList().block();
+        List<Person> actual = reactiveTemplate.findByIds(ids, Person.class)
+                .subscribeOn(Schedulers.parallel())
+                .collectList().block();
 
         assertThat(actual).containsExactlyInAnyOrder(customer1, customer2);
     }

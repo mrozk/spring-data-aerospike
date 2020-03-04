@@ -8,6 +8,7 @@ import org.springframework.data.aerospike.BaseReactiveIntegrationTests;
 import org.springframework.data.aerospike.sample.Customer;
 import org.springframework.data.aerospike.sample.ReactiveCustomerRepository;
 import reactor.core.publisher.Flux;
+import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
 
@@ -31,27 +32,33 @@ public class ReactiveAerospikeRepositoryExistRelatedTests extends BaseReactiveIn
 
     @Test
     public void existsById_ShouldReturnTrueWhenExists() {
-        StepVerifier.create(customerRepo.existsById(customer2.getId())).expectNext(true).verifyComplete();
+        StepVerifier.create(customerRepo.existsById(customer2.getId()).subscribeOn(Schedulers.parallel()))
+                .expectNext(true).verifyComplete();
     }
 
     @Test
     public void existsById_ShouldReturnFalseWhenNotExists() {
-        StepVerifier.create(customerRepo.existsById("non-existent-id")).expectNext(false).verifyComplete();
+        StepVerifier.create(customerRepo.existsById("non-existent-id").subscribeOn(Schedulers.parallel()))
+                .expectNext(false).verifyComplete();
     }
 
     @Test
     public void existsByIdPublisher_ShouldReturnTrueWhenExists() {
-        StepVerifier.create(customerRepo.existsById(Flux.just(customer1.getId()))).expectNext(true).verifyComplete();
+        StepVerifier.create(customerRepo.existsById(Flux.just(customer1.getId())).subscribeOn(Schedulers.parallel()))
+                .expectNext(true).verifyComplete();
     }
 
     @Test
     public void existsByIdPublisher_ShouldReturnFalseWhenNotExists() {
-        StepVerifier.create(customerRepo.existsById(Flux.just("non-existent-id"))).expectNext(false).verifyComplete();
+        StepVerifier.create(customerRepo.existsById(Flux.just("non-existent-id")).subscribeOn(Schedulers.parallel()))
+                .expectNext(false).verifyComplete();
     }
 
     @Test
     public void existsByIdPublisher_ShouldCheckOnlyFirstElement() {
-        StepVerifier.create(customerRepo.existsById(Flux.just(customer1.getId(), "non-existent-id"))).expectNext(true).verifyComplete();
+        StepVerifier.create(customerRepo.existsById(Flux.just(customer1.getId(), "non-existent-id"))
+                .subscribeOn(Schedulers.parallel()))
+                .expectNext(true).verifyComplete();
     }
 
 }

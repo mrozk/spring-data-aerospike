@@ -9,6 +9,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.aerospike.BaseReactiveIntegrationTests;
 import org.springframework.data.aerospike.core.ReactiveAerospikeTemplate;
 import org.springframework.data.aerospike.sample.Person;
+import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
 /**
@@ -29,7 +30,7 @@ public class ReactiveAerospikeTemplateMiscTests extends BaseReactiveIntegrationT
         StepVerifier.create(reactiveTemplate.execute(() -> {
             WritePolicy writePolicy = new WritePolicy();
             writePolicy.recordExistsAction = RecordExistsAction.CREATE_ONLY;
-            return reactorClient.add(writePolicy, key, bin).block();
+            return reactorClient.add(writePolicy, key, bin).subscribeOn(Schedulers.parallel()).block();
         }))
                 .expectError(DuplicateKeyException.class)
                 .verify();
@@ -37,16 +38,16 @@ public class ReactiveAerospikeTemplateMiscTests extends BaseReactiveIntegrationT
 
     public void exists_shouldReturnTrueIfValueIsPresent() {
         Person one = Person.builder().id(id).firstName("tya").emailAddress("gmail.com").build();
-        reactiveTemplate.insert(one).block();
+        reactiveTemplate.insert(one).subscribeOn(Schedulers.parallel()).block();
 
-        StepVerifier.create(reactiveTemplate.exists(id, Person.class))
+        StepVerifier.create(reactiveTemplate.exists(id, Person.class).subscribeOn(Schedulers.parallel()))
                 .expectNext(true)
                 .verifyComplete();
     }
 
     @Test
     public void exists_shouldReturnFalseIfValueIsAbsent() {
-        StepVerifier.create(reactiveTemplate.exists(id, Person.class))
+        StepVerifier.create(reactiveTemplate.exists(id, Person.class).subscribeOn(Schedulers.parallel()))
                 .expectNext(false)
                 .verifyComplete();
     }

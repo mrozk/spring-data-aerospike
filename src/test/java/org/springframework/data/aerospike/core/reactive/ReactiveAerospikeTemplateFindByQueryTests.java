@@ -7,6 +7,7 @@ import org.springframework.data.aerospike.BaseReactiveIntegrationTests;
 import org.springframework.data.aerospike.repository.query.Query;
 import org.springframework.data.aerospike.sample.Person;
 import org.springframework.data.domain.Sort;
+import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
 import java.util.Collections;
@@ -38,13 +39,16 @@ public class ReactiveAerospikeTemplateFindByQueryTests extends BaseReactiveInteg
                 .collect(Collectors.toList());
         reactiveTemplate.insertAll(persons).blockLast();
 
-        List<Person> result = reactiveTemplate.findAll(Person.class).collectList().block();
+        List<Person> result = reactiveTemplate.findAll(Person.class)
+                .subscribeOn(Schedulers.parallel())
+                .collectList().block();
         assertThat(result).containsOnlyElementsOf(persons);
     }
 
     @Test
     public void findAll_findsNothing() {
-        StepVerifier.create(reactiveTemplate.findAll(Person.class))
+        StepVerifier.create(reactiveTemplate.findAll(Person.class)
+                .subscribeOn(Schedulers.parallel()))
                 .expectNextCount(0)
                 .verifyComplete();
     }
@@ -55,7 +59,9 @@ public class ReactiveAerospikeTemplateFindByQueryTests extends BaseReactiveInteg
                 .mapToObj(id -> new Person(nextId(), "Firstname", "Lastname")).collect(Collectors.toList());
         reactiveTemplate.insertAll(allUsers).blockLast();
 
-        List<Person> actual = reactiveTemplate.findInRange(0, 5, Sort.unsorted(), Person.class).collectList().block();
+        List<Person> actual = reactiveTemplate.findInRange(0, 5, Sort.unsorted(), Person.class)
+                .subscribeOn(Schedulers.parallel())
+                .collectList().block();
         assertThat(actual)
                 .hasSize(5)
                 .containsAnyElementsOf(allUsers);
@@ -67,7 +73,9 @@ public class ReactiveAerospikeTemplateFindByQueryTests extends BaseReactiveInteg
                 .mapToObj(id -> new Person(nextId(), "Firstname", "Lastname")).collect(Collectors.toList());
         reactiveTemplate.insertAll(allUsers).blockLast();
 
-        List<Person> actual = reactiveTemplate.findInRange(0, 5, Sort.unsorted(), Person.class).collectList().block();
+        List<Person> actual = reactiveTemplate.findInRange(0, 5, Sort.unsorted(), Person.class)
+                .subscribeOn(Schedulers.parallel())
+                .collectList().block();
 
         assertThat(actual)
                 .hasSize(5)
@@ -79,7 +87,9 @@ public class ReactiveAerospikeTemplateFindByQueryTests extends BaseReactiveInteg
         Query query = new Query((Sort) null);
         query.setOffset(1);
 
-        assertThatThrownBy(() -> reactiveTemplate.find(query, Person.class).collectList().block())
+        assertThatThrownBy(() -> reactiveTemplate.find(query, Person.class)
+                .subscribeOn(Schedulers.parallel())
+                .collectList().block())
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Unsorted query must not have offset value. For retrieving paged results use sorted query.");
     }
@@ -93,7 +103,9 @@ public class ReactiveAerospikeTemplateFindByQueryTests extends BaseReactiveInteg
 
         Query query = createQueryForMethodWithArgs("findPersonByFirstName", "Dave");
 
-        List<Person> actual = reactiveTemplate.find(query, Person.class).collectList().block();
+        List<Person> actual = reactiveTemplate.find(query, Person.class)
+                .subscribeOn(Schedulers.parallel())
+                .collectList().block();
         assertThat(actual)
                 .hasSize(10)
                 .containsExactlyInAnyOrderElementsOf(allUsers);
@@ -109,7 +121,9 @@ public class ReactiveAerospikeTemplateFindByQueryTests extends BaseReactiveInteg
 
         Query query = createQueryForMethodWithArgs("findByLastNameOrderByFirstNameAsc", "Matthews");
 
-        List<Person> actual = reactiveTemplate.find(query, Person.class).collectList().block();
+        List<Person> actual = reactiveTemplate.find(query, Person.class)
+                .subscribeOn(Schedulers.parallel())
+                .collectList().block();
         assertThat(actual)
                 .hasSize(10)
                 .containsExactlyElementsOf(allUsers);
@@ -125,7 +139,9 @@ public class ReactiveAerospikeTemplateFindByQueryTests extends BaseReactiveInteg
 
         Query query = createQueryForMethodWithArgs("findByLastNameOrderByFirstNameDesc", "Matthews");
 
-        List<Person> actual = reactiveTemplate.find(query, Person.class).collectList().block();
+        List<Person> actual = reactiveTemplate.find(query, Person.class)
+                .subscribeOn(Schedulers.parallel())
+                .collectList().block();
         assertThat(actual)
                 .hasSize(10)
                 .containsExactlyElementsOf(allUsers);
@@ -140,7 +156,9 @@ public class ReactiveAerospikeTemplateFindByQueryTests extends BaseReactiveInteg
 
         Query query = createQueryForMethodWithArgs("findCustomerByAgeBetween", 25, 30);
 
-        List<Person> actual = reactiveTemplate.find(query, Person.class).collectList().block();
+        List<Person> actual = reactiveTemplate.find(query, Person.class)
+                .subscribeOn(Schedulers.parallel())
+                .collectList().block();
 
         assertThat(actual)
                 .hasSize(6)

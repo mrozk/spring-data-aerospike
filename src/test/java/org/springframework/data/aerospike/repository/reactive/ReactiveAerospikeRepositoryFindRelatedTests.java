@@ -12,6 +12,7 @@ import org.springframework.data.aerospike.sample.ReactiveCustomerRepository;
 import org.springframework.data.domain.Sort;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
 import java.util.ArrayList;
@@ -51,36 +52,44 @@ public class ReactiveAerospikeRepositoryFindRelatedTests extends BaseReactiveInt
 
     @Test
     public void findById_ShouldReturnExistent() {
-        StepVerifier.create(customerRepo.findById(customer2.getId())).consumeNextWith(actual ->
+        StepVerifier.create(customerRepo.findById(customer2.getId())
+                .subscribeOn(Schedulers.parallel())).consumeNextWith(actual ->
                 assertThat(actual).isEqualTo(customer2)
         ).verifyComplete();
     }
 
     @Test
     public void findById_ShouldNotReturnNotExistent() {
-        StepVerifier.create(customerRepo.findById("non-existent-id")).expectNextCount(0).verifyComplete();
+        StepVerifier.create(customerRepo.findById("non-existent-id")
+                .subscribeOn(Schedulers.parallel()))
+                .expectNextCount(0).verifyComplete();
     }
 
     @Test
     public void findByIdPublisher_ShouldReturnFirst() {
         Publisher<String> ids = Flux.just(customer2.getId(), customer4.getId());
 
-        StepVerifier.create(customerRepo.findById(ids)).consumeNextWith(actual ->
-                assertThat(actual).isEqualTo(customer2)
-        ).verifyComplete();
+        StepVerifier.create(customerRepo.findById(ids)
+                .subscribeOn(Schedulers.parallel()))
+                .consumeNextWith(actual ->
+                        assertThat(actual).isEqualTo(customer2)
+                ).verifyComplete();
     }
 
     @Test
     public void findByIdPublisher_NotReturnFirstNotExistent() {
         Publisher<String> ids = Flux.just("non-existent-id", customer2.getId(), customer4.getId());
 
-        StepVerifier.create(customerRepo.findById(ids)).expectNextCount(0).verifyComplete();
+        StepVerifier.create(customerRepo.findById(ids)
+                .subscribeOn(Schedulers.parallel()))
+                .expectNextCount(0).verifyComplete();
     }
 
     @Test
     public void findAll_ShouldReturnAll() {
         assertConsumedCustomers(
-                StepVerifier.create(customerRepo.findAll()),
+                StepVerifier.create(customerRepo.findAll()
+                        .subscribeOn(Schedulers.parallel())),
                 customers -> assertThat(customers).containsOnly(customer1, customer2, customer3, customer4));
     }
 
@@ -88,7 +97,8 @@ public class ReactiveAerospikeRepositoryFindRelatedTests extends BaseReactiveInt
     public void findAllByIDsIterable_ShouldReturnAllExistent() {
         Iterable<String> ids = asList(customer2.getId(), "non-existent-id", customer4.getId());
         assertConsumedCustomers(
-                StepVerifier.create(customerRepo.findAllById(ids)),
+                StepVerifier.create(customerRepo.findAllById(ids)
+                        .subscribeOn(Schedulers.parallel())),
                 customers -> assertThat(customers).containsOnly(customer2, customer4));
 
     }
@@ -97,63 +107,72 @@ public class ReactiveAerospikeRepositoryFindRelatedTests extends BaseReactiveInt
     public void findAllByIDsPublisher_ShouldReturnAllExistent() {
         Publisher<String> ids = Flux.just(customer1.getId(), customer2.getId(), customer4.getId(), "non-existent-id");
         assertConsumedCustomers(
-                StepVerifier.create(customerRepo.findAllById(ids)),
+                StepVerifier.create(customerRepo.findAllById(ids)
+                        .subscribeOn(Schedulers.parallel())),
                 customers -> assertThat(customers).containsOnly(customer1, customer2, customer4));
     }
 
     @Test
     public void findByLastname_ShouldWorkProperly() {
         assertConsumedCustomers(
-                StepVerifier.create(customerRepo.findByLastname("Simpson")),
+                StepVerifier.create(customerRepo.findByLastname("Simpson")
+                        .subscribeOn(Schedulers.parallel())),
                 customers -> assertThat(customers).containsOnly(customer1, customer2, customer3));
     }
 
     @Test
     public void findByLastnameName_ShouldWorkProperly() {
         assertConsumedCustomers(
-                StepVerifier.create(customerRepo.findByLastnameNot("Simpson")),
+                StepVerifier.create(customerRepo.findByLastnameNot("Simpson")
+                        .subscribeOn(Schedulers.parallel())),
                 customers -> assertThat(customers).containsOnly(customer4));
     }
 
     @Test
     public void findOneByLastname_ShouldWorkProperly() {
-        StepVerifier.create(customerRepo.findOneByLastname("Groening")).consumeNextWith(actual ->
-                assertThat(actual).isEqualTo(customer4)
-        ).verifyComplete();
+        StepVerifier.create(customerRepo.findOneByLastname("Groening")
+                .subscribeOn(Schedulers.parallel()))
+                .consumeNextWith(actual -> assertThat(actual).isEqualTo(customer4)
+                ).verifyComplete();
     }
 
     @Test
     public void findByLastnameOrderByFirstnameAsc_ShouldWorkProperly() {
         assertConsumedCustomers(
-                StepVerifier.create(customerRepo.findByLastnameOrderByFirstnameAsc("Simpson")),
+                StepVerifier.create(customerRepo.findByLastnameOrderByFirstnameAsc("Simpson")
+                        .subscribeOn(Schedulers.parallel())),
                 customers -> assertThat(customers).containsExactly(customer3, customer1, customer2));
     }
 
     @Test
     public void findByLastnameOrderByFirstnameDesc_ShouldWorkProperly() {
         assertConsumedCustomers(
-                StepVerifier.create(customerRepo.findByLastnameOrderByFirstnameDesc("Simpson")),
+                StepVerifier.create(customerRepo.findByLastnameOrderByFirstnameDesc("Simpson")
+                        .subscribeOn(Schedulers.parallel())),
                 customers -> assertThat(customers).containsExactly(customer2, customer1, customer3));
     }
 
     @Test
     public void findByFirstnameEndsWith_ShouldWorkProperly() {
         assertConsumedCustomers(
-                StepVerifier.create(customerRepo.findByFirstnameEndsWith("t")),
+                StepVerifier.create(customerRepo.findByFirstnameEndsWith("t")
+                        .subscribeOn(Schedulers.parallel())),
                 customers -> assertThat(customers).containsOnly(customer3, customer4));
     }
 
     @Test
     public void findByFirstnameStartsWithOrderByAgeAsc_ShouldWorkProperly() {
         assertConsumedCustomers(
-                StepVerifier.create(customerRepo.findByFirstnameStartsWithOrderByAgeAsc("Ma")),
+                StepVerifier.create(customerRepo.findByFirstnameStartsWithOrderByAgeAsc("Ma")
+                        .subscribeOn(Schedulers.parallel())),
                 customers -> assertThat(customers).containsExactly(customer2, customer4));
     }
 
     @Test
     public void findByAgeLessThan_ShouldWorkProperly() {
         assertConsumedCustomers(
-                StepVerifier.create(customerRepo.findByAgeLessThan(40, Sort.by(asc("firstname")))),
+                StepVerifier.create(customerRepo.findByAgeLessThan(40, Sort.by(asc("firstname")))
+                        .subscribeOn(Schedulers.parallel())),
                 customers -> assertThat(customers).containsExactly(customer3, customer2)
         );
     }
@@ -161,67 +180,74 @@ public class ReactiveAerospikeRepositoryFindRelatedTests extends BaseReactiveInt
     @Test
     public void findByFirstnameIn_ShouldWorkProperly() {
         assertConsumedCustomers(
-                StepVerifier.create(customerRepo.findByFirstnameIn(asList("Matt", "Homer"))),
+                StepVerifier.create(customerRepo.findByFirstnameIn(asList("Matt", "Homer"))
+                        .subscribeOn(Schedulers.parallel())),
                 customers -> assertThat(customers).containsOnly(customer1, customer4));
     }
 
     @Test
     public void findByFirstnameAndLastname_ShouldWorkProperly() {
         assertConsumedCustomers(
-                StepVerifier.create(customerRepo.findByFirstnameAndLastname("Bart", "Simpson")),
+                StepVerifier.create(customerRepo.findByFirstnameAndLastname("Bart", "Simpson")
+                        .subscribeOn(Schedulers.parallel())),
                 customers -> assertThat(customers).containsOnly(customer3));
     }
 
     @Test
     public void findOneByFirstnameAndLastname_ShouldWorkProperly() {
-        StepVerifier.create(customerRepo.findOneByFirstnameAndLastname("Bart", "Simpson")).consumeNextWith(actual ->
-                assertThat(actual).isEqualTo(customer3)
-        ).verifyComplete();
+        StepVerifier.create(customerRepo.findOneByFirstnameAndLastname("Bart", "Simpson")
+                .subscribeOn(Schedulers.parallel()))
+                .consumeNextWith(actual ->assertThat(actual).isEqualTo(customer3)
+                ).verifyComplete();
     }
 
     @Test
     public void findByLastnameAndAge_ShouldWorkProperly() {
-        StepVerifier.create(customerRepo.findByLastnameAndAge("Simpson", 15)).consumeNextWith(actual ->
-                assertThat(actual).isEqualTo(customer3)
-        ).verifyComplete();
+        StepVerifier.create(customerRepo.findByLastnameAndAge("Simpson", 15)
+                .subscribeOn(Schedulers.parallel()))
+                .consumeNextWith(actual -> assertThat(actual).isEqualTo(customer3)
+                ).verifyComplete();
     }
 
     @Test
     public void findByAgeBetween_ShouldWorkProperly() {
         assertConsumedCustomers(
-                StepVerifier.create(customerRepo.findByAgeBetween(10, 40)),
+                StepVerifier.create(customerRepo.findByAgeBetween(10, 40)
+                        .subscribeOn(Schedulers.parallel())),
                 customers -> assertThat(customers).containsOnly(customer2, customer3));
     }
 
     @Test
     public void findByFirstnameContains_ShouldWorkProperly() {
         assertConsumedCustomers(
-                StepVerifier.create(customerRepo.findByFirstnameContains("ar")),
+                StepVerifier.create(customerRepo.findByFirstnameContains("ar")
+                        .subscribeOn(Schedulers.parallel())),
                 customers -> assertThat(customers).containsOnly(customer2, customer3));
     }
 
     @Test
     public void findByFirstnameContainingIgnoreCase_ShouldWorkProperly() {
         assertConsumedCustomers(
-                StepVerifier.create(customerRepo.findByFirstnameContainingIgnoreCase("m")),
+                StepVerifier.create(customerRepo.findByFirstnameContainingIgnoreCase("m")
+                        .subscribeOn(Schedulers.parallel())),
                 customers -> assertThat(customers).containsOnly(customer1, customer2, customer4));
     }
 
     @Test
     public void findByAgeBetweenAndLastname_ShouldWorkProperly() {
         assertConsumedCustomers(
-                StepVerifier.create(customerRepo.findByAgeBetweenAndLastname(30, 70,"Simpson")),
+                StepVerifier.create(customerRepo.findByAgeBetweenAndLastname(30, 70,"Simpson")
+                        .subscribeOn(Schedulers.parallel())),
                 customers -> assertThat(customers).containsOnly(customer1, customer2));
     }
 
     @Test
     public void findByAgeBetweenOrderByFirstnameDesc_ShouldWorkProperly() {
         assertConsumedCustomers(
-                StepVerifier.create(customerRepo.findByAgeBetweenOrderByFirstnameDesc(30, 70)),
+                StepVerifier.create(customerRepo.findByAgeBetweenOrderByFirstnameDesc(30, 70)
+                        .subscribeOn(Schedulers.parallel())),
                 customers -> assertThat(customers).containsExactly(customer4, customer2, customer1));
     }
-
-
 
     private void assertConsumedCustomers(StepVerifier.FirstStep<Customer> step, Consumer<Collection<Customer>> assertion) {
         step.recordWith(ArrayList::new)

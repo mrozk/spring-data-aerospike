@@ -11,6 +11,7 @@ import org.springframework.data.aerospike.sample.ReactiveCompositeObjectReposito
 import org.springframework.data.aerospike.sample.ReactiveCustomerRepository;
 import org.springframework.data.aerospike.sample.SimpleObject;
 import reactor.core.publisher.Flux;
+import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
 import java.util.ArrayList;
@@ -41,26 +42,26 @@ public class ReactiveAerospikeRepositorySaveRelatedTests extends BaseReactiveInt
 
     @Test
     public void saveEntityShouldInsertNewEntity() {
-        StepVerifier.create(customerRepo.save(customer1)).expectNext(customer1).verifyComplete();
+        StepVerifier.create(customerRepo.save(customer1).subscribeOn(Schedulers.parallel())).expectNext(customer1).verifyComplete();
 
         assertCustomerExistsInRepo(customer1);
     }
 
     @Test
     public void saveEntityShouldUpdateExistingEntity() {
-        StepVerifier.create(customerRepo.save(customer1)).expectNext(customer1).verifyComplete();
+        StepVerifier.create(customerRepo.save(customer1).subscribeOn(Schedulers.parallel())).expectNext(customer1).verifyComplete();
 
         customer1.setFirstname("Matt");
         customer1.setLastname("Groening");
 
-        StepVerifier.create(customerRepo.save(customer1)).expectNext(customer1).verifyComplete();
+        StepVerifier.create(customerRepo.save(customer1).subscribeOn(Schedulers.parallel())).expectNext(customer1).verifyComplete();
 
         assertCustomerExistsInRepo(customer1);
     }
 
     @Test
     public void saveIterableOfNewEntitiesShouldInsertEntity() {
-        StepVerifier.create(customerRepo.saveAll(Arrays.asList(customer1, customer2, customer3)))
+        StepVerifier.create(customerRepo.saveAll(Arrays.asList(customer1, customer2, customer3)).subscribeOn(Schedulers.parallel()))
                 .recordWith(ArrayList::new)
                 .thenConsumeWhile(customer -> true)
                 .consumeRecordedWith(actual ->
@@ -74,12 +75,14 @@ public class ReactiveAerospikeRepositorySaveRelatedTests extends BaseReactiveInt
 
     @Test
     public void saveIterableOfMixedEntitiesShouldInsertNewAndUpdateOld() {
-        StepVerifier.create(customerRepo.save(customer1)).expectNext(customer1).verifyComplete();
+        StepVerifier.create(customerRepo.save(customer1).subscribeOn(Schedulers.parallel()))
+                .expectNext(customer1).verifyComplete();
 
         customer1.setFirstname("Matt");
         customer1.setLastname("Groening");
 
-        StepVerifier.create(customerRepo.saveAll(Arrays.asList(customer1, customer2, customer3))).expectNextCount(3).verifyComplete();
+        StepVerifier.create(customerRepo.saveAll(Arrays.asList(customer1, customer2, customer3)).subscribeOn(Schedulers.parallel()))
+                .expectNextCount(3).verifyComplete();
 
         assertCustomerExistsInRepo(customer1);
         assertCustomerExistsInRepo(customer2);
@@ -88,7 +91,8 @@ public class ReactiveAerospikeRepositorySaveRelatedTests extends BaseReactiveInt
 
     @Test
     public void savePublisherOfEntitiesShouldInsertEntity() {
-        StepVerifier.create(customerRepo.saveAll(Flux.just(customer1, customer2, customer3))).expectNextCount(3).verifyComplete();
+        StepVerifier.create(customerRepo.saveAll(Flux.just(customer1, customer2, customer3)).subscribeOn(Schedulers.parallel()))
+                .expectNextCount(3).verifyComplete();
 
         assertCustomerExistsInRepo(customer1);
         assertCustomerExistsInRepo(customer2);
@@ -97,7 +101,8 @@ public class ReactiveAerospikeRepositorySaveRelatedTests extends BaseReactiveInt
 
     @Test
     public void savePublisherOfMixedEntitiesShouldInsertNewAndUpdateOld() {
-        StepVerifier.create(customerRepo.save(customer1)).expectNext(customer1).verifyComplete();
+        StepVerifier.create(customerRepo.save(customer1).subscribeOn(Schedulers.parallel()))
+                .expectNext(customer1).verifyComplete();
 
         customer1.setFirstname("Matt");
         customer1.setLastname("Groening");
@@ -117,7 +122,8 @@ public class ReactiveAerospikeRepositorySaveRelatedTests extends BaseReactiveInt
                 .simpleObject(SimpleObject.builder().property1("prop1").property2(555).build())
                 .build();
 
-        StepVerifier.create(compositeRepo.save(expected)).expectNext(expected).verifyComplete();
+        StepVerifier.create(compositeRepo.save(expected).subscribeOn(Schedulers.parallel()))
+                .expectNext(expected).verifyComplete();
 
         StepVerifier.create(compositeRepo.findById(expected.getId())).consumeNextWith(actual -> {
             assertThat(actual.getIntValue()).isEqualTo(expected.getIntValue());
