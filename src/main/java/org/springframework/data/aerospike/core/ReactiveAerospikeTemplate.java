@@ -1,6 +1,5 @@
 package org.springframework.data.aerospike.core;
 
-import com.aerospike.client.AerospikeClient;
 import com.aerospike.client.AerospikeException;
 import com.aerospike.client.Bin;
 import com.aerospike.client.Key;
@@ -13,7 +12,7 @@ import com.aerospike.client.query.Filter;
 import com.aerospike.client.query.KeyRecord;
 import com.aerospike.client.reactor.AerospikeReactorClient;
 import com.aerospike.helper.query.Qualifier;
-import com.aerospike.helper.query.QueryEngine;
+import com.aerospike.helper.query.ReactorQueryEngine;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.aerospike.convert.AerospikeWriteData;
 import org.springframework.data.aerospike.convert.MappingAerospikeConverter;
@@ -21,12 +20,10 @@ import org.springframework.data.aerospike.mapping.AerospikeMappingContext;
 import org.springframework.data.aerospike.mapping.AerospikePersistentEntity;
 import org.springframework.data.aerospike.repository.query.Query;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.util.StreamUtils;
 import org.springframework.util.Assert;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -51,20 +48,17 @@ public class ReactiveAerospikeTemplate extends BaseAerospikeTemplate implements 
 
     private final AerospikeReactorClient reactorClient;
 
-    //TODO temporary while ReactiveQueryEngine not implemented
-    private final QueryEngine queryEngine;
+    private final ReactorQueryEngine queryEngine;
 
-    public ReactiveAerospikeTemplate(//TODO temporary while ReactiveQueryEngine not implemented
-                                     AerospikeClient client,
-                                     String namespace,
+    public ReactiveAerospikeTemplate(String namespace,
                                      MappingAerospikeConverter converter,
                                      AerospikeMappingContext mappingContext,
                                      AerospikeExceptionTranslator exceptionTranslator,
                                      AerospikeReactorClient reactorClient) {
-        super(namespace, converter, mappingContext, exceptionTranslator, client.writePolicyDefault);
+        super(namespace, converter, mappingContext, exceptionTranslator, reactorClient.getWritePolicyDefault());
         Assert.notNull(reactorClient, "Aerospike reactor client must not be null!");
         this.reactorClient = reactorClient;
-        this.queryEngine = new QueryEngine(client);
+        this.queryEngine = new ReactorQueryEngine(reactorClient);
     }
 
     @Override
@@ -402,19 +396,9 @@ public class ReactiveAerospikeTemplate extends BaseAerospikeTemplate implements 
         return findAllRecordsUsingQuery(type, null, qualifier);
     }
 
-    //TODO temporary stub while reactive query engine not released
     <T> Flux<KeyRecord> findAllRecordsUsingQuery(Class<T> type, Filter filter, Qualifier... qualifiers) {
         String setName = getSetName(type);
-
-        return Flux.using(() -> this.queryEngine.select(this.namespace, setName, filter, qualifiers),
-                recordIterator -> Flux.fromStream(StreamUtils.createStreamFromIterator(recordIterator)),
-                recordIterator -> {
-                    try {
-                        recordIterator.close();
-                    } catch (IOException e) {
-                        log.error("Caught exception while closing query", e);
-                    }
-                });
+        return this.queryEngine.select(this.namespace, setName, filter, qualifiers);
     }
 
 }
