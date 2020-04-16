@@ -16,7 +16,7 @@
 package org.springframework.data.aerospike.core;
 
 import com.aerospike.client.policy.GenerationPolicy;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.data.aerospike.BaseBlockingIntegrationTests;
 import org.springframework.data.aerospike.SampleClasses.CustomCollectionClass;
 import org.springframework.data.aerospike.SampleClasses.DocumentWithExpiration;

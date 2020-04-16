@@ -5,38 +5,32 @@ package org.springframework.data.aerospike.convert;
 
 import com.aerospike.client.Key;
 import com.aerospike.client.Record;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 public class AerospikeReadDataTest {
 
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
-
 	@Test
-	public void shouldThrowExceptionIfRecordIsNull() throws Exception {
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("Record must not be null");
-
-		AerospikeReadData.forRead(new Key("namespace", "set", 867), null);
+	public void shouldThrowExceptionIfRecordIsNull() {
+		assertThatThrownBy(() -> AerospikeReadData.forRead(new Key("namespace", "set", 867), null))
+				.isInstanceOf(IllegalArgumentException.class)
+				.hasMessage("Record must not be null");
 	}
 
 	@Test
-	public void shouldThrowExceptionIfRecordBinsIsNull() throws Exception {
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("Record bins must not be null");
-
-		AerospikeReadData.forRead(new Key("namespace", "set", 867), new Record(null, 0, 0));
+	public void shouldThrowExceptionIfRecordBinsIsNull() {
+		assertThatThrownBy(() -> AerospikeReadData.forRead(new Key("namespace", "set", 867), new Record(null, 0, 0)))
+				.isInstanceOf(IllegalArgumentException.class)
+				.hasMessage("Record bins must not be null");
 	}
 
 	@Test
-	public void shouldThrowExceptionIfKeyIsNull() throws Exception {
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("Key must not be null");
-
-		AerospikeReadData.forRead(null, new Record(Collections.emptyMap(), 0, 0));
+	public void shouldThrowExceptionIfKeyIsNull() {
+		assertThatThrownBy(() -> AerospikeReadData.forRead(null, new Record(Collections.emptyMap(), 0, 0)))
+				.isInstanceOf(IllegalArgumentException.class)
+				.hasMessage("Key must not be null");
 	}
 }

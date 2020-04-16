@@ -1,13 +1,14 @@
 package org.springframework.data.aerospike;
 
-import com.aerospike.client.lua.LuaAerospikeLib;
 import com.aerospike.client.reactor.AerospikeReactorClient;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.aerospike.core.ReactiveAerospikeTemplate;
 import reactor.blockhound.BlockHound;
+import reactor.blockhound.BlockingOperationError;
 import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 import java.io.Serializable;
 import java.time.Duration;
@@ -23,23 +24,23 @@ public abstract class BaseReactiveIntegrationTests extends BaseIntegrationTests 
         return reactiveTemplate.findById(id, type).block();
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void installBlockHound() {
         BlockHound.install();
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void shouldFailAsBlocking(){
-        Mono.delay(Duration.ofSeconds(1))
+        StepVerifier.create(Mono.delay(Duration.ofSeconds(1))
                 .doOnNext(it -> {
                     try {
                         Thread.sleep(10);
-                    }
-                    catch (InterruptedException e) {
+                    } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
-                })
-                .block();
+                }))
+                .expectError(BlockingOperationError.class)
+                .verify();
     }
 
 }

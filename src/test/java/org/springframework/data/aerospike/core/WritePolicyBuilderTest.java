@@ -3,9 +3,10 @@ package org.springframework.data.aerospike.core;
 import com.aerospike.client.policy.GenerationPolicy;
 import com.aerospike.client.policy.RecordExistsAction;
 import com.aerospike.client.policy.WritePolicy;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class WritePolicyBuilderTest {
 
@@ -15,38 +16,44 @@ public class WritePolicyBuilderTest {
     private static final RecordExistsAction RECORD_EXISTS_ACTION = RecordExistsAction.REPLACE;
     private static final boolean SEND_KEY = true;
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldFailOnNull() {
-        WritePolicyBuilder.builder(null);
+        assertThatThrownBy(() -> WritePolicyBuilder.builder(null))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldFailOnNullCommitLevel() {
         WritePolicy policy = new WritePolicy();
         policy.commitLevel = null;
-        WritePolicyBuilder.builder(policy).build();
+        assertThatThrownBy(() -> WritePolicyBuilder.builder(policy).build())
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldFailOnNullRecordExistsAction() {
-        WritePolicyBuilder.builder(new WritePolicy())
+        assertThatThrownBy(() -> WritePolicyBuilder.builder(new WritePolicy())
                 .recordExistsAction(null)
-                .build();
+                .build())
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldFailOnNullGenerationPolicy() {
-        WritePolicyBuilder.builder(new WritePolicy())
+        assertThatThrownBy(() -> WritePolicyBuilder.builder(new WritePolicy())
                 .generationPolicy(null)
-                .build();
+                .build())
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldFailOnNoneGenerationPolicy() {
-        WritePolicyBuilder.builder(new WritePolicy())
+        assertThatThrownBy(() -> WritePolicyBuilder.builder(new WritePolicy())
                 .generation(1)
                 .generationPolicy(GenerationPolicy.NONE)
-                .build();
+                .build())
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Field 'generationPolicy' must not be 'NONE' when 'generation' is set");
     }
 
     @Test

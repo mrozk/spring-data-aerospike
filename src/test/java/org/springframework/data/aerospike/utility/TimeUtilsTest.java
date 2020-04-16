@@ -2,7 +2,7 @@ package org.springframework.data.aerospike.utility;
 
 import org.assertj.core.data.Offset;
 import org.joda.time.DateTime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.data.aerospike.SampleClasses.EXPIRATION_ONE_SECOND;

@@ -2,8 +2,8 @@ package org.springframework.data.aerospike.core;
 
 import com.aerospike.client.query.IndexType;
 import lombok.Value;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.data.aerospike.AsyncUtils;
 import org.springframework.data.aerospike.BaseBlockingIntegrationTests;
 import org.springframework.data.aerospike.IndexAlreadyExistsException;
@@ -21,13 +21,13 @@ public class AerospikeTemplateIndexTests extends BaseBlockingIntegrationTests {
     private static final String INDEX_TEST_1 = "index-test-77777";
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() {
         blockingAerospikeTestOperations.dropIndexIfExists(IndexedDocument.class, INDEX_TEST_1);
     }
 
     @Test
-    public void createIndex_createsIndexIfExecutedConcurrently() throws Exception {
+    public void createIndex_createsIndexIfExecutedConcurrently() {
         AtomicInteger errors = new AtomicInteger();
         AsyncUtils.executeConcurrently(5, () -> {
             try {
@@ -43,7 +43,7 @@ public class AerospikeTemplateIndexTests extends BaseBlockingIntegrationTests {
     }
 
     @Test
-    public void createIndex_allCreateIndexConcurrentAttemptsFailIfIndexAlreadyExists() throws Exception {
+    public void createIndex_allCreateIndexConcurrentAttemptsFailIfIndexAlreadyExists() {
         template.createIndex(IndexedDocument.class, INDEX_TEST_1, "stringField", IndexType.STRING);
 
         awaitTenSecondsUntil(() ->

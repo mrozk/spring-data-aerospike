@@ -1,7 +1,7 @@
 package org.springframework.data.aerospike.core.reactive;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.data.aerospike.BaseReactiveIntegrationTests;
 import org.springframework.data.aerospike.core.ReactiveAerospikeTemplate;
 import org.springframework.data.aerospike.repository.query.Criteria;
@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.parser.Part;
 import reactor.core.scheduler.Schedulers;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Tests for count related methods in {@link ReactiveAerospikeTemplate}.
@@ -20,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ReactiveAerospikeTemplateCountRelatedTests extends BaseReactiveIntegrationTests {
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() {
         super.setUp();
         blockingAerospikeTestOperations.deleteAll(Person.class);
@@ -73,9 +74,10 @@ public class ReactiveAerospikeTemplateCountRelatedTests extends BaseReactiveInte
         assertThat(count).isZero();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void count_shouldRejectNullEntityClass() {
-        reactiveTemplate.count(null, (Class<?>) null).block();
+        assertThatThrownBy(() -> reactiveTemplate.count(null, (Class<?>) null).block())
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
 

@@ -15,7 +15,7 @@
  */
 package org.springframework.data.aerospike.core;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.data.aerospike.BaseBlockingIntegrationTests;
 import org.springframework.data.aerospike.sample.Person;
 

@@ -15,14 +15,14 @@
  */
 package org.springframework.data.aerospike.repository.support;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.data.aerospike.sample.Person;
 import org.springframework.data.aerospike.core.ReactiveAerospikeOperations;
 import org.springframework.data.aerospike.mapping.AerospikePersistentEntity;
@@ -35,17 +35,15 @@ import org.springframework.data.repository.core.support.PersistentEntityInformat
 
 import java.io.Serializable;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
  * @author Igor Ermolenko
  */
-@RunWith(MockitoJUnitRunner.StrictStubs.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 public class ReactiveAerospikeRepositoryFactoryTest {
 
     @Mock
@@ -61,22 +59,11 @@ public class ReactiveAerospikeRepositoryFactoryTest {
     @Mock
     ReactiveAerospikeOperations aerospikeOperations;
 
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
-
-    /**
-     * @throws Exception
-     */
-    @SuppressWarnings("unchecked")
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    public void setUp() {
         when(aerospikeOperations.getMappingContext()).thenReturn(context);
-
     }
 
-    /**
-     * Test method for {@link ReactiveAerospikeRepositoryFactory#getEntityInformation(Class)}.
-     */
     @SuppressWarnings("unchecked")
     @Test
     public void testGetEntityInformationClassOfT() {
@@ -84,12 +71,9 @@ public class ReactiveAerospikeRepositoryFactoryTest {
 
         ReactiveAerospikeRepositoryFactory factory = new ReactiveAerospikeRepositoryFactory(aerospikeOperations);
         EntityInformation<Person, Serializable> entityInformation = factory.getEntityInformation(Person.class);
-        assertTrue(entityInformation instanceof PersistentEntityInformation);
+        assertThat(entityInformation).isInstanceOf(PersistentEntityInformation.class);
     }
 
-    /**
-     * Test method for {@link ReactiveAerospikeRepositoryFactory#getTargetRepository(RepositoryInformation)}.
-     */
     @SuppressWarnings("unchecked")
     @Test
     public void testGetTargetRepositoryRepositoryInformation() {
@@ -98,19 +82,18 @@ public class ReactiveAerospikeRepositoryFactoryTest {
         Person.class.getDeclaredConstructors();
 
         Object repository = aerospikeRepositoryFactoryMock.getTargetRepository(repositoryInformation);
-        assertThat(repository, is(notNullValue()));
+        assertThat(repository).isNotNull();
     }
 
-    /**
-     * Test method for {@link ReactiveAerospikeRepositoryFactory#getRepositoryBaseClass(RepositoryMetadata)}.
-     */
     @Test
     public void testGetRepositoryBaseClassRepositoryMetadata() {
         RepositoryMetadata metadata = mock(RepositoryMetadata.class);
         Mockito.<Class<?>>when(metadata.getRepositoryInterface()).thenReturn(SimpleKeyValueRepository.class);
+
         ReactiveAerospikeRepositoryFactory factory = new ReactiveAerospikeRepositoryFactory(aerospikeOperations);
         Class<?> repbaseClass = factory.getRepositoryBaseClass(metadata);
-        assertTrue(repbaseClass.getSimpleName().equals(SimpleKeyValueRepository.class.getSimpleName()));
+
+        assertThat(repbaseClass.getSimpleName()).isEqualTo(SimpleKeyValueRepository.class.getSimpleName());
     }
 
 }

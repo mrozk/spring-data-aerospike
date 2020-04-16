@@ -2,7 +2,7 @@ package org.springframework.data.aerospike.core.reactive;
 
 import com.aerospike.client.Key;
 import com.aerospike.client.policy.Policy;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.aerospike.AsyncUtils;
 import org.springframework.data.aerospike.BaseReactiveIntegrationTests;
@@ -118,7 +118,7 @@ public class ReactiveAerospikeTemplateInsertTests extends BaseReactiveIntegratio
     }
 
     @Test
-    public void insertsOnlyFirstDocumentAndNextAttemptsShouldFailWithDuplicateKeyExceptionForVersionedDocument() throws Exception {
+    public void insertsOnlyFirstDocumentAndNextAttemptsShouldFailWithDuplicateKeyExceptionForVersionedDocument() {
         AtomicLong counter = new AtomicLong();
         AtomicLong duplicateKeyCounter = new AtomicLong();
         int numberOfConcurrentSaves = 5;
@@ -139,7 +139,7 @@ public class ReactiveAerospikeTemplateInsertTests extends BaseReactiveIntegratio
     }
 
     @Test
-    public void insertsOnlyFirstDocumentAndNextAttemptsShouldFailWithDuplicateKeyExceptionForNonVersionedDocument() throws Exception {
+    public void insertsOnlyFirstDocumentAndNextAttemptsShouldFailWithDuplicateKeyExceptionForNonVersionedDocument() {
         AtomicLong counter = new AtomicLong();
         AtomicLong duplicateKeyCounter = new AtomicLong();
         int numberOfConcurrentSaves = 5;

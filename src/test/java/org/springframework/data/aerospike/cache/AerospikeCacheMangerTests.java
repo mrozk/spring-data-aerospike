@@ -17,7 +17,7 @@
 package org.springframework.data.aerospike.cache;
 
 import com.aerospike.client.AerospikeClient;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.transaction.TransactionAwareCacheDecorator;
@@ -26,8 +26,7 @@ import org.springframework.data.aerospike.convert.MappingAerospikeConverter;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * 
@@ -43,8 +42,8 @@ public class AerospikeCacheMangerTests extends BaseBlockingIntegrationTests {
 		AerospikeCacheManager manager = new AerospikeCacheManager(client, converter);
 		manager.afterPropertiesSet();
 		Cache cache = manager.getCache("missing-cache");
-		assertNotNull("Cache instance was null", cache);
-		assertTrue("Cache was not an instance of AerospikeCache", cache instanceof AerospikeCache);
+
+		assertThat(cache).isNotNull();
 	}
 
 	@Test
@@ -53,8 +52,8 @@ public class AerospikeCacheMangerTests extends BaseBlockingIntegrationTests {
 				Arrays.asList("default-cache"), converter);
 		manager.afterPropertiesSet();
 		Cache cache = manager.lookupAerospikeCache("default-cache");
-		assertNotNull("Cache instance was null", cache);
-		assertTrue("Cache was not an instance of AerospikeCache", cache instanceof AerospikeCache);
+
+		assertThat(cache).isNotNull().isInstanceOf(AerospikeCache.class);
 	}
 
 	@Test
@@ -63,8 +62,8 @@ public class AerospikeCacheMangerTests extends BaseBlockingIntegrationTests {
 				Arrays.asList("default-cache"), "custom-set", converter);
 		manager.afterPropertiesSet();
 		Cache cache = manager.lookupAerospikeCache("default-cache");
-		assertNotNull("Cache instance was null", cache);
-		assertTrue("Cache was not an instance of AerospikeCache", cache instanceof AerospikeCache);
+
+		assertThat(cache).isNotNull().isInstanceOf(AerospikeCache.class);
 	}
 
 	@Test
@@ -73,8 +72,8 @@ public class AerospikeCacheMangerTests extends BaseBlockingIntegrationTests {
 		manager.setTransactionAware(true);
 		manager.afterPropertiesSet();
 		Cache cache = manager.getCache("transaction-aware-cache");
-		assertNotNull("Cache instance was null", cache);
-		assertTrue("Cache was not an instance of TransactionAwareCacheDecorator", cache instanceof TransactionAwareCacheDecorator);
+
+		assertThat(cache).isNotNull().isInstanceOf(TransactionAwareCacheDecorator.class);
 	}
 
 }

@@ -18,7 +18,7 @@ package org.springframework.data.aerospike.core;
 import com.aerospike.client.Key;
 import com.aerospike.client.Record;
 import com.aerospike.client.policy.Policy;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.aerospike.AsyncUtils;
@@ -116,7 +116,7 @@ public class AerospikeTemplateUpdateTests extends BaseBlockingIntegrationTests {
     }
 
     @Test
-    public void onlyFirstUpdateSucceedsAndNextAttemptsShouldFailWithOptimisticLockingFailureExceptionForVersionedDocument() throws Exception {
+    public void onlyFirstUpdateSucceedsAndNextAttemptsShouldFailWithOptimisticLockingFailureExceptionForVersionedDocument() {
         VersionedClass document = new VersionedClass(id, "foobar");
         template.insert(document);
 
@@ -138,7 +138,7 @@ public class AerospikeTemplateUpdateTests extends BaseBlockingIntegrationTests {
     }
 
     @Test
-    public void allConcurrentUpdatesSucceedForNonVersionedDocument() throws Exception {
+    public void allConcurrentUpdatesSucceedForNonVersionedDocument() {
         Person document = new Person(id, "foobar");
         template.insert(document);
 

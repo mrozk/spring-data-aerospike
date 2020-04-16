@@ -15,7 +15,7 @@
  */
 package org.springframework.data.aerospike.repository;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.aerospike.BaseBlockingIntegrationTests;
 import org.springframework.data.aerospike.sample.CompositeObject;
@@ -32,14 +32,14 @@ public class RepositoriesIntegrationTests extends BaseBlockingIntegrationTests {
     CompositeObjectRepository repository;
 
     @Test
-    public void findOne_shouldReturnNullForNonExistingKey() throws Exception {
+    public void findOne_shouldReturnNullForNonExistingKey() {
         Optional<CompositeObject> one = repository.findById("non-existing-id");
 
         assertThat(one).isNotPresent();
     }
 
     @Test
-    public void shouldSaveObjectWithPersistenceConstructorThatHasAllFields() throws Exception {
+    public void shouldSaveObjectWithPersistenceConstructorThatHasAllFields() {
         CompositeObject expected = CompositeObject.builder()
                 .id("composite-object-1")
                 .intValue(15)
@@ -53,7 +53,7 @@ public class RepositoriesIntegrationTests extends BaseBlockingIntegrationTests {
     }
 
     @Test
-    public void shouldDeleteObjectWithPersistenceConstructor() throws Exception {
+    public void shouldDeleteObjectWithPersistenceConstructor() {
         String id = nextId();
         CompositeObject expected = CompositeObject.builder()
                 .id(id)

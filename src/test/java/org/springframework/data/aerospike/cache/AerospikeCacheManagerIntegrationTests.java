@@ -2,15 +2,14 @@ package org.springframework.data.aerospike.cache;
 
 import com.aerospike.client.AerospikeClient;
 import com.aerospike.client.Key;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.aerospike.BaseBlockingIntegrationTests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class AerospikeCacheManagerIntegrationTests extends BaseBlockingIntegrationTests {
 
@@ -22,7 +21,7 @@ public class AerospikeCacheManagerIntegrationTests extends BaseBlockingIntegrati
     @Autowired
     CachingComponent cachingComponent;
 
-    @After
+    @AfterEach
     public void tearDown() {
         cachingComponent.reset();
         client.delete(null, new Key(getNameSpace(), AerospikeCacheManager.DEFAULT_SET_NAME, KEY));
@@ -32,11 +31,12 @@ public class AerospikeCacheManagerIntegrationTests extends BaseBlockingIntegrati
     public void shouldCache() {
         CachedObject response1 = cachingComponent.cachingMethod(KEY);
         CachedObject response2 = cachingComponent.cachingMethod(KEY);
-        assertNotNull("Component returned null", response1);
-        assertEquals("Response didn't match", VALUE, response1.getValue());
-        assertNotNull("Component returned null", response2);
-        assertEquals("Response didn't match", VALUE, response2.getValue());
-        assertEquals("Component didn't cache result", 1, cachingComponent.getNoOfCalls());
+
+        assertThat(response1).isNotNull();
+        assertThat(response1.getValue()).isEqualTo(VALUE);
+        assertThat(response2).isNotNull();
+        assertThat(response2.getValue()).isEqualTo(VALUE);
+        assertThat(cachingComponent.getNoOfCalls()).isEqualTo(1);
     }
 
     @Test
@@ -44,11 +44,12 @@ public class AerospikeCacheManagerIntegrationTests extends BaseBlockingIntegrati
         CachedObject response1 = cachingComponent.cachingMethod(KEY);
         cachingComponent.cacheEvictingMethod(KEY);
         CachedObject response2 = cachingComponent.cachingMethod(KEY);
-        assertNotNull("Component returned null", response1);
-        assertEquals("Response didn't match", VALUE, response1.getValue());
-        assertNotNull("Component returned null", response2);
-        assertEquals("Response didn't match", VALUE, response2.getValue());
-        assertEquals("Component didn't evict cached entry", 2, cachingComponent.getNoOfCalls());
+
+        assertThat(response1).isNotNull();
+        assertThat(response1.getValue()).isEqualTo(VALUE);
+        assertThat(response2).isNotNull();
+        assertThat(response2.getValue()).isEqualTo(VALUE);
+        assertThat(cachingComponent.getNoOfCalls()).isEqualTo(2);
     }
 
     public static class CachingComponent {

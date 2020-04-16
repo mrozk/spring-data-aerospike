@@ -20,9 +20,10 @@ import com.aerospike.client.query.Filter;
 import com.aerospike.client.query.IndexType;
 import com.aerospike.client.query.RecordSet;
 import com.aerospike.client.query.Statement;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.data.aerospike.BaseBlockingIntegrationTests;
+import org.springframework.data.aerospike.QueryUtils;
 import org.springframework.data.aerospike.repository.query.Query;
 import org.springframework.data.aerospike.sample.Person;
 import org.springframework.data.domain.Sort;
@@ -51,7 +52,7 @@ public class AerospikeTemplateFindByQueryTests extends BaseBlockingIntegrationTe
     List<Person> all = Arrays.asList(jean, ashley, beatrice, dave, zaipper, knowlen, xylophone, mitch, alister, aabbot);
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() {
         super.setUp();
         blockingAerospikeTestOperations.deleteAll(Person.class);
@@ -65,7 +66,7 @@ public class AerospikeTemplateFindByQueryTests extends BaseBlockingIntegrationTe
 
     @Test
     public void testFindWithFilterEqual() {
-        Query query = createQueryForMethodWithArgs("findPersonByFirstName", "Dave");
+        Query query = QueryUtils.createQueryForMethodWithArgs("findPersonByFirstName", "Dave");
 
         Stream<Person> result = template.find(query, Person.class);
 
@@ -74,7 +75,7 @@ public class AerospikeTemplateFindByQueryTests extends BaseBlockingIntegrationTe
 
     @Test
     public void testFindWithFilterEqualOrderBy() {
-        Query query = createQueryForMethodWithArgs("findByLastNameOrderByFirstNameAsc", "Matthews");
+        Query query = QueryUtils.createQueryForMethodWithArgs("findByLastNameOrderByFirstNameAsc", "Matthews");
 
         Stream<Person> result = template.find(query, Person.class);
 
@@ -86,7 +87,7 @@ public class AerospikeTemplateFindByQueryTests extends BaseBlockingIntegrationTe
     @Test
     public void testFindWithFilterEqualOrderByDesc() {
         Object[] args = {"Matthews"};
-        Query query = createQueryForMethodWithArgs("findByLastNameOrderByFirstNameDesc", args);
+        Query query = QueryUtils.createQueryForMethodWithArgs("findByLastNameOrderByFirstNameDesc", args);
 
         Stream<Person> result = template.find(query, Person.class);
 
@@ -97,7 +98,7 @@ public class AerospikeTemplateFindByQueryTests extends BaseBlockingIntegrationTe
 
     @Test
     public void testFindWithFilterRange() {
-        Query query = createQueryForMethodWithArgs("findCustomerByAgeBetween", 25, 30);
+        Query query = QueryUtils.createQueryForMethodWithArgs("findCustomerByAgeBetween", 25, 30);
 
         Stream<Person> result = template.find(query, Person.class);
 

@@ -2,7 +2,7 @@ package org.springframework.data.aerospike.core.reactive;
 
 import com.aerospike.client.Key;
 import com.aerospike.client.policy.Policy;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.aerospike.AsyncUtils;
@@ -18,6 +18,7 @@ import reactor.test.StepVerifier;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.entry;
 
 /**
@@ -36,10 +37,13 @@ public class ReactiveAerospikeTemplateSaveRelatedTests extends BaseReactiveInteg
         assertThat(findById(id, VersionedClass.class).version).isEqualTo(1);
     }
 
-    @Test(expected = OptimisticLockingFailureException.class)
+    @Test
     public void save_shouldNotSaveDocumentIfItAlreadyExistsWithZeroVersion() {
         reactiveTemplate.save(new VersionedClass(id, "foo", 0L)).subscribeOn(Schedulers.parallel()).block();
-        reactiveTemplate.save(new VersionedClass(id, "foo", 0L)).subscribeOn(Schedulers.parallel()).block();
+
+        StepVerifier.create(reactiveTemplate.save(new VersionedClass(id, "foo", 0L)).subscribeOn(Schedulers.parallel()))
+                .expectError(OptimisticLockingFailureException.class)
+                .verify();
     }
 
     @Test
@@ -50,9 +54,11 @@ public class ReactiveAerospikeTemplateSaveRelatedTests extends BaseReactiveInteg
         reactiveTemplate.save(new VersionedClass(id, "foo", 2L)).subscribeOn(Schedulers.parallel()).block();
     }
 
-    @Test(expected = DataRetrievalFailureException.class)
+    @Test
     public void save_shouldFailSaveNewDocumentWithVersionGreaterThanZero() {
-        reactiveTemplate.save(new VersionedClass(id, "foo", 5L)).subscribeOn(Schedulers.parallel()).block();
+        StepVerifier.create(reactiveTemplate.save(new VersionedClass(id, "foo", 5L)).subscribeOn(Schedulers.parallel()))
+                .expectError(DataRetrievalFailureException.class)
+                .verify();
     }
 
     @Test
@@ -111,7 +117,7 @@ public class ReactiveAerospikeTemplateSaveRelatedTests extends BaseReactiveInteg
     }
 
     @Test
-    public void save_shouldUpdateAlreadyExistingDocument() throws Exception {
+    public void save_shouldUpdateAlreadyExistingDocument() {
         AtomicLong counter = new AtomicLong();
         int numberOfConcurrentSaves = 5;
 
@@ -141,7 +147,7 @@ public class ReactiveAerospikeTemplateSaveRelatedTests extends BaseReactiveInteg
     }
 
     @Test
-    public void save_shouldSaveOnlyFirstDocumentAndNextAttemptsShouldFailWithOptimisticLockingException() throws Exception {
+    public void save_shouldSaveOnlyFirstDocumentAndNextAttemptsShouldFailWithOptimisticLockingException() {
         AtomicLong counter = new AtomicLong();
         AtomicLong optimisticLockCounter = new AtomicLong();
         int numberOfConcurrentSaves = 5;
@@ -202,9 +208,10 @@ public class ReactiveAerospikeTemplateSaveRelatedTests extends BaseReactiveInteg
 
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void save_rejectsNullObjectToBeSaved() {
-        reactiveTemplate.save(null).block();
+        assertThatThrownBy(() -> reactiveTemplate.save(null).block())
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
 }

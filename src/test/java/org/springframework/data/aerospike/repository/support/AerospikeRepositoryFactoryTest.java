@@ -15,14 +15,14 @@
  */
 package org.springframework.data.aerospike.repository.support;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.data.aerospike.core.AerospikeOperations;
 import org.springframework.data.aerospike.sample.Person;
 import org.springframework.data.aerospike.mapping.AerospikePersistentEntity;
@@ -35,10 +35,9 @@ import org.springframework.data.repository.core.support.PersistentEntityInformat
 
 import java.io.Serializable;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -49,7 +48,8 @@ import static org.mockito.Mockito.when;
  * @author Jean Mercier
  *
  */
-@RunWith(MockitoJUnitRunner.StrictStubs.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 public class AerospikeRepositoryFactoryTest {
 
 	@Mock RepositoryInformation repositoryInformation;
@@ -60,21 +60,12 @@ public class AerospikeRepositoryFactoryTest {
 	@Mock AerospikePersistentEntity entity;
 	@Mock AerospikeOperations aerospikeOperations;
 
-	@Rule public ExpectedException exception = ExpectedException.none();
-
-	/**
-	 * @throws java.lang.Exception
-	 */
 	@SuppressWarnings("unchecked")
-	@Before
-	public void setUp() throws Exception {
+	@BeforeEach
+	public void setUp() {
 		when(aerospikeOperations.getMappingContext()).thenReturn(context);
-
 	}
 
-	/**
-	 * Test method for {@link org.springframework.data.aerospike.repository.support.AerospikeRepositoryFactory#getEntityInformation(java.lang.Class)}.
-	 */
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testGetEntityInformationClassOfT() {
@@ -82,12 +73,9 @@ public class AerospikeRepositoryFactoryTest {
 
 		AerospikeRepositoryFactory factory = new AerospikeRepositoryFactory(aerospikeOperations);
 		EntityInformation<Person, Serializable> entityInformation = factory.getEntityInformation(Person.class);
-		assertTrue(entityInformation instanceof PersistentEntityInformation);
+		assertThat(entityInformation).isInstanceOf(PersistentEntityInformation.class);
 	}
 
-	/**
-	 * Test method for {@link org.springframework.data.aerospike.repository.support.AerospikeRepositoryFactory#getTargetRepository(org.springframework.data.repository.core.RepositoryInformation)}.
-	 */
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testGetTargetRepositoryRepositoryInformation() {
@@ -96,19 +84,16 @@ public class AerospikeRepositoryFactoryTest {
 		Person.class.getDeclaredConstructors();
 
 		Object repository = aerospikeRepositoryFactoryMock.getTargetRepository(repositoryInformation);
-		assertThat(repository, is(notNullValue()));
+		assertThat(repository).isNotNull();
 	}
 
-	/**
-	 * Test method for {@link org.springframework.data.aerospike.repository.support.AerospikeRepositoryFactory#getRepositoryBaseClass(org.springframework.data.repository.core.RepositoryMetadata)}.
-	 */
 	@Test
 	public void testGetRepositoryBaseClassRepositoryMetadata() {
 		RepositoryMetadata metadata = mock(RepositoryMetadata.class);
 		Mockito.<Class<?>>when(metadata.getRepositoryInterface()).thenReturn(SimpleKeyValueRepository.class);
 		AerospikeRepositoryFactory factory = new AerospikeRepositoryFactory(aerospikeOperations);
 		Class<?> repbaseClass = factory.getRepositoryBaseClass(metadata);
-		assertTrue(repbaseClass.getSimpleName().equals(SimpleKeyValueRepository.class.getSimpleName()));
+		assertThat(repbaseClass.getSimpleName()).isEqualTo(SimpleKeyValueRepository.class.getSimpleName());
 	}
 
 }

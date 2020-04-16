@@ -20,8 +20,8 @@ import com.aerospike.client.Record;
 import org.assertj.core.data.Offset;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.data.aerospike.BaseBlockingIntegrationTests;
 import org.springframework.data.aerospike.SampleClasses.DocumentWithDefaultConstructor;
 import org.springframework.data.aerospike.SampleClasses.DocumentWithExpiration;
@@ -37,7 +37,7 @@ import static org.springframework.data.aerospike.SampleClasses.DocumentWithExpir
 //TODO: Potentially unstable tests. Instead of sleeping, we need somehow do time travel like in CouchbaseMock.
 public class AerospikeExpirationTests extends BaseBlockingIntegrationTests {
 
-    @After
+    @AfterEach
     public void tearDown() {
         aerospikeTestOperations.rollbackTime();
     }

@@ -18,7 +18,7 @@ package org.springframework.data.aerospike.core;
 import com.aerospike.client.Key;
 import com.aerospike.client.Record;
 import com.aerospike.client.policy.Policy;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.dao.ConcurrencyFailureException;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -144,7 +144,7 @@ public class AerospikeTemplateSaveTests extends BaseBlockingIntegrationTests {
     }
 
     @Test
-    public void shouldUpdateAlreadyExistingDocument() throws Exception {
+    public void shouldUpdateAlreadyExistingDocument() {
         AtomicLong counter = new AtomicLong();
         int numberOfConcurrentSaves = 5;
 
@@ -174,7 +174,7 @@ public class AerospikeTemplateSaveTests extends BaseBlockingIntegrationTests {
     }
 
     @Test
-    public void shouldSaveOnlyFirstDocumentAndNextAttemptsShouldFailWithOptimisticLockingException() throws Exception {
+    public void shouldSaveOnlyFirstDocumentAndNextAttemptsShouldFailWithOptimisticLockingException() {
         AtomicLong counter = new AtomicLong();
         AtomicLong optimisticLockCounter = new AtomicLong();
         int numberOfConcurrentSaves = 5;
@@ -221,7 +221,7 @@ public class AerospikeTemplateSaveTests extends BaseBlockingIntegrationTests {
     }
 
     @Test
-    public void shouldConcurrentlyUpdateDocumentIfTouchOnReadIsTrue() throws Exception {
+    public void shouldConcurrentlyUpdateDocumentIfTouchOnReadIsTrue() {
         int numberOfConcurrentUpdate = 10;
         AsyncUtils.executeConcurrently(numberOfConcurrentUpdate, new Runnable() {
             @Override

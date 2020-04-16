@@ -1,14 +1,15 @@
 package org.springframework.data.aerospike.mapping;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.aerospike.SampleClasses.DocumentWithExpressionInCollection;
 import org.springframework.data.aerospike.SampleClasses.DocumentWithoutCollection;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@RunWith(MockitoJUnitRunner.StrictStubs.class)
+@ExtendWith(MockitoExtension.class)
 public class BasicAerospikePersistentEntityTest {
 
     private AerospikeMappingContext context = new AerospikeMappingContext();
@@ -20,11 +21,13 @@ public class BasicAerospikePersistentEntityTest {
         assertThat(entity.getSetName()).isEqualTo(DocumentWithoutCollection.class.getSimpleName());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldFailIfEnvironmentNull() {
         BasicAerospikePersistentEntity<?> entity = context.getPersistentEntity(DocumentWithExpressionInCollection.class);
 
-        entity.getSetName();
+        assertThatThrownBy(() -> entity.getSetName())
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Environment must be set to use 'collection'");
     }
 
 }

@@ -17,8 +17,8 @@
 package org.springframework.data.aerospike.repository;
 
 import com.aerospike.client.query.IndexType;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.aerospike.BaseBlockingIntegrationTests;
 import org.springframework.data.aerospike.core.AerospikeOperations;
@@ -54,7 +54,7 @@ public class PersonRepositoryIntegrationTests extends BaseBlockingIntegrationTes
 
 	List<Person> all;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		super.setUp();
 		blockingAerospikeTestOperations.deleteAll(Person.class);

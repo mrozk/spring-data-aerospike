@@ -1,7 +1,7 @@
 package org.springframework.data.aerospike.core.reactive;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.data.aerospike.BaseReactiveIntegrationTests;
 import org.springframework.data.aerospike.SampleClasses.CompositeKey;
 import org.springframework.data.aerospike.SampleClasses.DocumentWithCompositeKey;
@@ -17,7 +17,7 @@ public class ReactiveAerospikeTemplateCompositeKeyTests extends BaseReactiveInte
     private DocumentWithCompositeKey document;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() {
         super.setUp();
         document = new DocumentWithCompositeKey(new CompositeKey(nextId(), 77));

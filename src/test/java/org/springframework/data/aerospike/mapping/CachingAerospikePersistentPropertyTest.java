@@ -3,16 +3,11 @@
  */
 package org.springframework.data.aerospike.mapping;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.mockito.Mock;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.aerospike.sample.Person;
 
@@ -25,75 +20,47 @@ import org.springframework.data.aerospike.sample.Person;
  */
 public class CachingAerospikePersistentPropertyTest {
 
-	@Mock ApplicationContext applicationContext;
+	AerospikeMappingContext context;
 
-	@Rule public ExpectedException exception = ExpectedException.none();
-
-	AerospikeMappingContext context = null;
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@Before
-	public void setUp() throws Exception {
+	@BeforeEach
+	public void setUp() {
 		context = new AerospikeMappingContext();
-		context.setApplicationContext(applicationContext);
+		context.setApplicationContext(mock(ApplicationContext.class));
 	}
 
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@After
-	public void tearDown() throws Exception {
-	}
-
-	/**
-	 * Test method for {@link org.springframework.data.aerospike.mapping.CachingAerospikePersistentProperty#isTransient()}.
-	 */
 	@Test
 	public void testIsTransient() {
 		AerospikePersistentEntity<?> entity = context.getPersistentEntity(Person.class);
-		assertFalse(entity.getIdProperty().isTransient());
+
+		assertThat(entity.getIdProperty().isTransient()).isFalse();
 	}
 
-	/**
-	 * Test method for {@link org.springframework.data.aerospike.mapping.CachingAerospikePersistentProperty#isAssociation()}.
-	 */
 	@Test
 	public void testIsAssociation() {
 		AerospikePersistentEntity<?> entity = context.getPersistentEntity(Person.class);
-		assertFalse(entity.getIdProperty().isAssociation());
+
+		assertThat(entity.getIdProperty().isAssociation()).isFalse();
 	}
 
-	/**
-	 * Test method for {@link org.springframework.data.aerospike.mapping.CachingAerospikePersistentProperty#usePropertyAccess()}.
-	 */
 	@Test
 	public void testUsePropertyAccess() {
 		AerospikePersistentEntity<?> entity = context.getPersistentEntity(Person.class);
-		assertFalse(entity.getIdProperty().usePropertyAccess());
+
+		assertThat(entity.getIdProperty().usePropertyAccess()).isFalse();
 	}
 
-	/**
-	 * Test method for {@link org.springframework.data.aerospike.mapping.CachingAerospikePersistentProperty#isIdProperty()}.
-	 */
 	@Test
 	public void testIsIdProperty() {
 		AerospikePersistentEntity<?> entity = context.getPersistentEntity(Person.class);
-		assertTrue(entity.getIdProperty().isIdProperty());
+
+		assertThat(entity.getIdProperty().isIdProperty()).isTrue();
 	}
 
-	/**
-	 * Test method for {@link org.springframework.data.aerospike.mapping.CachingAerospikePersistentProperty#getFieldName()}.
-	 */
 	@Test
 	public void testGetFieldName() {
 		AerospikePersistentEntity<?> entity = context.getPersistentEntity(Person.class);
-		assertEquals("id", entity.getIdProperty().getName());
-	}
 
-	/**
-	 * Test method for {@link org.springframework.data.aerospike.mapping.CachingAerospikePersistentProperty#CachingAerospikePersistentProperty(java.lang.reflect.Field, java.beans.PropertyDescriptor, org.springframework.data.mapping.PersistentEntity, org.springframework.data.mapping.model.SimpleTypeHolder, org.springframework.data.mapping.model.FieldNamingStrategy)}.
-	 */
+		assertThat(entity.getIdProperty().getName()).isEqualTo("id");
+	}
 
 }

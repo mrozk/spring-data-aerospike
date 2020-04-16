@@ -20,25 +20,27 @@ import com.aerospike.client.Bin;
 import com.aerospike.client.Key;
 import com.aerospike.client.policy.RecordExistsAction;
 import com.aerospike.client.policy.WritePolicy;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.aerospike.BaseBlockingIntegrationTests;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 public class AerospikeTemplateExecuteTests extends BaseBlockingIntegrationTests {
 
-    @Test(expected = DuplicateKeyException.class)
+    @Test
     public void shouldTranslateException() {
         Key key = new Key(template.getNamespace(), "shouldTranslateException", "shouldTranslateException");
         Bin bin = new Bin("bin_name", "bin_value");
 
         template.getAerospikeClient().add(null, key, bin);
-        template.execute(() -> {
+        assertThatThrownBy(() ->template.execute(() -> {
             AerospikeClient client = template.getAerospikeClient();
             WritePolicy writePolicy = new WritePolicy(client.getWritePolicyDefault());
             writePolicy.recordExistsAction = RecordExistsAction.CREATE_ONLY;
 
             client.add(writePolicy, key, bin);
             return true;
-        });
+        })).isInstanceOf(DuplicateKeyException.class);
     }
 }

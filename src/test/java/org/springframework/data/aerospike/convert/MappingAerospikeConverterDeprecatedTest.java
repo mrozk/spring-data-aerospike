@@ -22,8 +22,8 @@ import lombok.Value;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.beans.HasProperty;
 import org.hamcrest.beans.SamePropertyValuesAs;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.ConversionNotSupportedException;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.support.DefaultConversionService;
@@ -52,7 +52,7 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasItem;
@@ -60,9 +60,6 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author Peter Milne
@@ -80,8 +77,8 @@ public class MappingAerospikeConverterDeprecatedTest {
 	private CustomConversions customConversions = new AerospikeCustomConversions(Collections.emptyList());
 	private AerospikeTypeAliasAccessor aerospikeTypeAliasAccessor = new AerospikeTypeAliasAccessor();
 
-	@Before
-	public void setUp() throws Exception {
+	@BeforeEach
+	public void setUp() {
 		converter = new MappingAerospikeConverter(new AerospikeMappingContext(), customConversions, aerospikeTypeAliasAccessor);
 		converter.afterPropertiesSet();
 		key = new Key(AEROSPIKE_NAME_SPACE, AEROSPIKE_SET_NAME, AEROSPIKE_KEY);
@@ -90,14 +87,13 @@ public class MappingAerospikeConverterDeprecatedTest {
 	@Test
 	public void testMappingAerospikeConverter() {
 		MappingAerospikeConverter mappingAerospikeConverter = new MappingAerospikeConverter(new AerospikeMappingContext(), customConversions, aerospikeTypeAliasAccessor);
-		assertNotNull(mappingAerospikeConverter.getConversionService());
+		assertThat(mappingAerospikeConverter.getConversionService()).isNotNull();
 	}
 
 	@Test
 	public void testGetConversionService() {
 		MappingAerospikeConverter mappingAerospikeConverter = new MappingAerospikeConverter(new AerospikeMappingContext(), customConversions, aerospikeTypeAliasAccessor);
-		assertNotNull(mappingAerospikeConverter.getConversionService());
-		assertTrue(mappingAerospikeConverter.getConversionService() instanceof DefaultConversionService);
+		assertThat(mappingAerospikeConverter.getConversionService()).isNotNull().isInstanceOf(DefaultConversionService.class);
 	}
 
 	@Test
@@ -110,8 +106,8 @@ public class MappingAerospikeConverterDeprecatedTest {
 		converter.write(address, dbObject);
 
 		Collection<Bin> bins = dbObject.getBins();
-		assertTrue(bins.contains(new Bin("city", "New York")));
-		assertTrue(bins.contains(new Bin("street", "Broadway")));
+
+		assertThat(bins).contains(new Bin("city", "New York"), new Bin("street", "Broadway"));
 	}
 
 	@SuppressWarnings("serial")
@@ -131,7 +127,8 @@ public class MappingAerospikeConverterDeprecatedTest {
 		AerospikeReadData dbObject = AerospikeReadData.forRead(key, record(bins));
 
 		Address convertedAddress = converter.read(Address.class, dbObject);
-		assertThat(convertedAddress, SamePropertyValuesAs.samePropertyValuesAs(address));
+
+		assertThat(convertedAddress).isEqualTo(address);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -145,7 +142,7 @@ public class MappingAerospikeConverterDeprecatedTest {
 		converter.write(foo, dbObject);
 
 		Object object = getBinValue("map", dbObject.getBins());
-		assertThat((Map<Locale, String>) object, hasEntry(Locale.US.toString(), "Biff"));
+		assertThat((Map)object).containsEntry(Locale.US.toString(), "Biff");
 	}
 
 	@Test
@@ -158,8 +155,8 @@ public class MappingAerospikeConverterDeprecatedTest {
 
 		Object object = getBinValue("sampleEnum", result.getBins());
 		//all Enums are saved in form of String in the DB
-		assertThat(object, is(instanceOf(String.class)));
-		assertThat(SampleEnum.valueOf(object.toString()), is(SampleEnum.FIRST));
+		assertThat(object).isInstanceOf(String.class);
+		assertThat(SampleEnum.valueOf(object.toString())).isEqualTo(SampleEnum.FIRST);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -173,8 +170,8 @@ public class MappingAerospikeConverterDeprecatedTest {
 
 		Object object = getBinValue("enums", result.getBins());
 
-		assertThat(((List) object).size(), is(1));
-		assertThat((String) ((List) object).get(0).toString(), is("FIRST"));
+		assertThat((List) object).hasSize(1);
+		assertThat((List) object).containsOnly("FIRST");
 	}
 
 	@SuppressWarnings("serial")
@@ -190,7 +187,7 @@ public class MappingAerospikeConverterDeprecatedTest {
 
 		ClassWithEnumProperty result = converter.read(ClassWithEnumProperty.class, dbObject);
 
-		assertThat(result.sampleEnum, is(SampleEnum.FIRST));
+		assertThat(result.sampleEnum).isEqualTo(SampleEnum.FIRST);
 	}
 
 	@SuppressWarnings("serial")
@@ -207,9 +204,9 @@ public class MappingAerospikeConverterDeprecatedTest {
 
 		ClassWithEnumProperty result = converter.read(ClassWithEnumProperty.class, dbObject);
 
-		assertThat(result.enums, is(instanceOf(List.class)));
-		assertThat(result.enums.size(), is(1));
-		assertThat(result.enums, hasItem(SampleEnum.FIRST));
+		assertThat(result.enums).isInstanceOf(List.class);
+		assertThat(result.enums).hasSize(1);
+		assertThat(result.enums).contains(SampleEnum.FIRST);
 	}
 
 	@Test
@@ -226,8 +223,8 @@ public class MappingAerospikeConverterDeprecatedTest {
 		Object foo = getBinValue("foo", bins);
 		Object firstName = getBinValue("firstname", bins);
 
-		MatcherAssert.assertThat((String) foo, is(equalTo("Oliver")));
-		assertNull(firstName);
+		assertThat(foo).isEqualTo("Oliver");
+		assertThat(firstName).isNull();
 	}
 
 	@SuppressWarnings("serial")
@@ -245,8 +242,7 @@ public class MappingAerospikeConverterDeprecatedTest {
 
 		Person result = converter.read(Person.class, dbObject);
 
-		assertThat(result.firstname, is("Oliver"));
-		assertThat(result, not(HasProperty.hasProperty("foo")));
+		assertThat(result.firstname).isEqualTo("Oliver");
 	}
 
 	@Test
@@ -263,7 +259,7 @@ public class MappingAerospikeConverterDeprecatedTest {
 		AerospikeReadData forRead = AerospikeReadData.forRead(key, record(bins));
 		Person result = converter.read(Person.class, forRead);
 
-		assertThat(result.addresses, hasSize(0));
+		assertThat(result.addresses).isEmpty();
 	}
 
 	@SuppressWarnings("serial")
@@ -285,8 +281,8 @@ public class MappingAerospikeConverterDeprecatedTest {
 
 		ClassWithSortedMap result = converter.read(ClassWithSortedMap.class, dbObject);
 
-		assertThat(result, is(instanceOf(ClassWithSortedMap.class)));
-		assertThat(result.map, is(instanceOf(Map.class)));
+		assertThat(result).isInstanceOf(ClassWithSortedMap.class);
+		assertThat(result.map).isInstanceOf(Map.class);
 	}
 
 

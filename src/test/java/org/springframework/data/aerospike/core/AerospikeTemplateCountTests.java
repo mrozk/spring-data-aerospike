@@ -15,8 +15,8 @@
  */
 package org.springframework.data.aerospike.core;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.data.aerospike.BaseBlockingIntegrationTests;
 import org.springframework.data.aerospike.repository.query.Criteria;
 import org.springframework.data.aerospike.repository.query.Query;
@@ -24,11 +24,12 @@ import org.springframework.data.aerospike.sample.Person;
 import org.springframework.data.repository.query.parser.Part;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class AerospikeTemplateCountTests extends BaseBlockingIntegrationTests {
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() {
         super.setUp();
         blockingAerospikeTestOperations.deleteAll(Person.class);
@@ -74,9 +75,10 @@ public class AerospikeTemplateCountTests extends BaseBlockingIntegrationTests {
         assertThat(count).isZero();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void countRejectsNullEntityClass() {
-        template.count(null, (Class<?>) null);
+        assertThatThrownBy(() ->template.count(null, (Class<?>) null))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
 }

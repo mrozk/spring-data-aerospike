@@ -17,7 +17,7 @@ package org.springframework.data.aerospike.core;
 
 import com.aerospike.client.Bin;
 import com.aerospike.client.Key;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.data.aerospike.BaseBlockingIntegrationTests;
 import org.springframework.data.aerospike.SampleClasses.DocumentWithTouchOnRead;
 import org.springframework.data.aerospike.SampleClasses.VersionedClassWithAllArgsConstructor;
@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.data.aerospike.SampleClasses.DocumentWithTouchOnReadAndExpirationProperty;
 import static org.springframework.data.aerospike.SampleClasses.EXPIRATION_ONE_MINUTE;
 
@@ -100,10 +101,11 @@ public class AerospikeTemplateFindTests extends BaseBlockingIntegrationTests {
         assertThat(actual).isEmpty();
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void findById_shouldFailOnTouchOnReadWithExpirationProperty() {
         template.insert(new DocumentWithTouchOnReadAndExpirationProperty(id, EXPIRATION_ONE_MINUTE));
-        template.findById(id, DocumentWithTouchOnReadAndExpirationProperty.class);
+        assertThatThrownBy(() -> template.findById(id, DocumentWithTouchOnReadAndExpirationProperty.class))
+                .isInstanceOf(IllegalStateException.class);
     }
 
     @Test

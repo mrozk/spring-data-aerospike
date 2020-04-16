@@ -1,13 +1,13 @@
 /**
  *
  */
-package org.springframework.data.keyvalue.repository.query;
+package org.springframework.data.repository.query;
 
 
 import java.lang.reflect.Method;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.aerospike.convert.AerospikeConverter;
@@ -32,22 +32,20 @@ public class AerospikeQueryCreatorUnitTests {
 	@Mock
 	AerospikeConverter converter;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
 		context = new AerospikeMappingContext();
 	}
 
-	@SuppressWarnings("unused")
 	@Test
-	public void createsQueryCorrectly() throws Exception {
+	public void createsQueryCorrectly() {
 		PartTree tree = new PartTree("findByFirstName", Person.class);
 
 		AerospikeQueryCreator creator = new AerospikeQueryCreator(tree, new StubParameterAccessor(converter, "Oliver"), context);
 		Query query = creator.createQuery();
 	}
 	
-	@SuppressWarnings("unused")
 	@Test
 	public void createQueryByInList(){
 		PartTree tree = new PartTree("findByFirstNameOrFriend", Person.class);

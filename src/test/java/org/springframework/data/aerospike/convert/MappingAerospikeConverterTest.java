@@ -202,7 +202,7 @@ public class MappingAerospikeConverterTest extends BaseMappingAerospikeConverter
 
 		assertThatThrownBy(() -> converter.write(document, forWrite))
 				.isInstanceOf(IllegalArgumentException.class)
-				.hasMessage("Expiration value must be greater than zero, but was: -60");
+				.hasMessageContaining("Expiration value must be greater than zero");
 	}
 
 	private int toRecordExpiration(int expiration) {

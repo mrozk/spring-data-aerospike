@@ -1,5 +1,7 @@
 package org.springframework.data.aerospike;
 
+import lombok.SneakyThrows;
+
 import java.util.concurrent.*;
 
 import static java.util.Collections.nCopies;
@@ -7,7 +9,8 @@ import static java.util.concurrent.CompletableFuture.runAsync;
 
 public class AsyncUtils {
 
-	public static void executeConcurrently(int numThreads, Runnable task) throws Exception {
+	@SneakyThrows
+	public static void executeConcurrently(int numThreads, Runnable task) {
 		ExecutorService pool = Executors.newFixedThreadPool(numThreads);
 
 		try {

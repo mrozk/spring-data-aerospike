@@ -1,7 +1,7 @@
 package org.springframework.data.aerospike.repository.reactive;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.aerospike.BaseReactiveIntegrationTests;
@@ -14,6 +14,7 @@ import reactor.test.StepVerifier;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * @author Igor Ermolenko
@@ -25,7 +26,7 @@ public class ReactiveAerospikeRepositoryDeleteRelatedTests extends BaseReactiveI
 
     private Customer customer1, customer2;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         customer1 = Customer.builder().id(nextId()).firstname("Homer").lastname("Simpson").age(42).build();
         customer2 = Customer.builder().id(nextId()).firstname("Marge").lastname("Simpson").age(39).build();
@@ -48,9 +49,10 @@ public class ReactiveAerospikeRepositoryDeleteRelatedTests extends BaseReactiveI
         StepVerifier.create(customerRepo.deleteById("non-existent-id").subscribeOn(Schedulers.parallel())).verifyComplete();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void deleteById_ShouldRejectsNullObject() {
-        customerRepo.deleteById((String) null).block();
+        assertThatThrownBy(() -> customerRepo.deleteById((String) null).block())
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -70,9 +72,10 @@ public class ReactiveAerospikeRepositoryDeleteRelatedTests extends BaseReactiveI
                 .verifyComplete();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void deleteByIdPublisher_ShouldRejectsNullObject() {
-        customerRepo.deleteById((Publisher) null).block();
+        assertThatThrownBy(() -> customerRepo.deleteById((Publisher) null).block())
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -90,9 +93,11 @@ public class ReactiveAerospikeRepositoryDeleteRelatedTests extends BaseReactiveI
                 .verifyComplete();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void delete_ShouldRejectsNullObject() {
-        customerRepo.delete(null).block();
+        assertThatThrownBy(() -> customerRepo.delete(null).block())
+                .isInstanceOf(IllegalArgumentException.class);
+
     }
 
     @Test
@@ -113,10 +118,12 @@ public class ReactiveAerospikeRepositoryDeleteRelatedTests extends BaseReactiveI
         StepVerifier.create(customerRepo.findById(customer2.getId())).expectNextCount(0).verifyComplete();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void deleteAllIterable_ShouldRejectsNullObject() {
         List<Customer> entities = asList(customer1, null, customer2);
-        customerRepo.deleteAll(entities).subscribeOn(Schedulers.parallel()).block();
+
+        assertThatThrownBy(() -> customerRepo.deleteAll(entities).subscribeOn(Schedulers.parallel()).block())
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
 

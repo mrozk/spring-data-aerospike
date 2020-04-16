@@ -1,8 +1,8 @@
 package org.springframework.data.aerospike.repository.reactive;
 
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.aerospike.BaseReactiveIntegrationTests;
 import org.springframework.data.aerospike.sample.CompositeObject;
@@ -32,7 +32,7 @@ public class ReactiveAerospikeRepositorySaveRelatedTests extends BaseReactiveInt
 
     private Customer customer1, customer2, customer3;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         customer1 = Customer.builder().id(nextId()).firstname("Homer").lastname("Simpson").age(42).build();
         customer2 = Customer.builder().id(nextId()).firstname("Marge").lastname("Simpson").age(39).build();

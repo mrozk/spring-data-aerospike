@@ -1,9 +1,10 @@
 package org.springframework.data.aerospike.core.reactive;
 
 import com.aerospike.client.query.IndexType;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.data.aerospike.BaseReactiveIntegrationTests;
+import org.springframework.data.aerospike.QueryUtils;
 import org.springframework.data.aerospike.repository.query.Query;
 import org.springframework.data.aerospike.sample.Person;
 import org.springframework.data.domain.Sort;
@@ -22,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class ReactiveAerospikeTemplateFindByQueryTests extends BaseReactiveIntegrationTests {
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() {
         super.setUp();
         blockingAerospikeTestOperations.deleteAll(Person.class);
@@ -101,7 +102,7 @@ public class ReactiveAerospikeTemplateFindByQueryTests extends BaseReactiveInteg
                 .mapToObj(id -> new Person(nextId(), "Dave", "Matthews")).collect(Collectors.toList());
         reactiveTemplate.insertAll(allUsers).blockLast();
 
-        Query query = createQueryForMethodWithArgs("findPersonByFirstName", "Dave");
+        Query query = QueryUtils.createQueryForMethodWithArgs("findPersonByFirstName", "Dave");
 
         List<Person> actual = reactiveTemplate.find(query, Person.class)
                 .subscribeOn(Schedulers.parallel())
@@ -119,7 +120,7 @@ public class ReactiveAerospikeTemplateFindByQueryTests extends BaseReactiveInteg
         reactiveTemplate.insertAll(allUsers).blockLast();
         allUsers.sort(Comparator.comparing(Person::getFirstName)); // Order user list by firstname ascending
 
-        Query query = createQueryForMethodWithArgs("findByLastNameOrderByFirstNameAsc", "Matthews");
+        Query query = QueryUtils.createQueryForMethodWithArgs("findByLastNameOrderByFirstNameAsc", "Matthews");
 
         List<Person> actual = reactiveTemplate.find(query, Person.class)
                 .subscribeOn(Schedulers.parallel())
@@ -137,7 +138,7 @@ public class ReactiveAerospikeTemplateFindByQueryTests extends BaseReactiveInteg
         reactiveTemplate.insertAll(allUsers).blockLast();
         allUsers.sort((o1, o2) -> o2.getFirstName().compareTo(o1.getFirstName())); // Order user list by firstname descending
 
-        Query query = createQueryForMethodWithArgs("findByLastNameOrderByFirstNameDesc", "Matthews");
+        Query query = QueryUtils.createQueryForMethodWithArgs("findByLastNameOrderByFirstNameDesc", "Matthews");
 
         List<Person> actual = reactiveTemplate.find(query, Person.class)
                 .subscribeOn(Schedulers.parallel())
@@ -154,7 +155,7 @@ public class ReactiveAerospikeTemplateFindByQueryTests extends BaseReactiveInteg
                 .collect(Collectors.toList());
         reactiveTemplate.insertAll(allUsers).blockLast();
 
-        Query query = createQueryForMethodWithArgs("findCustomerByAgeBetween", 25, 30);
+        Query query = QueryUtils.createQueryForMethodWithArgs("findCustomerByAgeBetween", 25, 30);
 
         List<Person> actual = reactiveTemplate.find(query, Person.class)
                 .subscribeOn(Schedulers.parallel())

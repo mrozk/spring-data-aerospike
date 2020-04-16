@@ -17,11 +17,12 @@ package org.springframework.data.aerospike.core;
 
 import com.aerospike.client.policy.RecordExistsAction;
 import com.aerospike.client.policy.WritePolicy;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.data.aerospike.BaseBlockingIntegrationTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.data.aerospike.SampleClasses.CustomCollectionClass;
 
 public class AerospikeTemplatePersistTests extends BaseBlockingIntegrationTests {
@@ -39,13 +40,14 @@ public class AerospikeTemplatePersistTests extends BaseBlockingIntegrationTests 
         assertThat(actual).isEqualTo(initial);
     }
 
-    @Test(expected = DataRetrievalFailureException.class)
+    @Test
     public void shouldNotPersistWithCustomWritePolicy() {
         CustomCollectionClass initial = new CustomCollectionClass(id, "data");
 
         WritePolicy writePolicy = new WritePolicy();
         writePolicy.recordExistsAction = RecordExistsAction.UPDATE_ONLY;
 
-        template.persist(initial, writePolicy);
+        assertThatThrownBy(() -> template.persist(initial, writePolicy))
+                .isInstanceOf(DataRetrievalFailureException.class);
     }
 }

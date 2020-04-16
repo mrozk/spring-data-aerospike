@@ -16,14 +16,14 @@
 package org.springframework.data.aerospike.repository.support;
 
 import com.aerospike.client.query.IndexType;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.data.aerospike.core.AerospikeOperations;
 import org.springframework.data.aerospike.sample.Person;
 import org.springframework.data.domain.Page;
@@ -46,7 +46,8 @@ import static org.mockito.Mockito.*;
  * @author Peter Milne
  * @author Jean Mercier
  */
-@RunWith(MockitoJUnitRunner.StrictStubs.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 public class SimpleAerospikeRepositoryTest {
 
 	@Mock
@@ -59,12 +60,8 @@ public class SimpleAerospikeRepositoryTest {
 	Person testPerson;
 	List<Person> testPersons;
 
-	@Rule
-	public ExpectedException exception = ExpectedException.none();
-
-
-	@Before
-	public void setUp() throws Exception {
+	@BeforeEach
+	public void setUp() {
 		when(metadata.getJavaType()).thenReturn(Person.class);
 
 		testPerson = new Person("21", "Jean");
@@ -186,14 +183,14 @@ public class SimpleAerospikeRepositoryTest {
 	}
 
 	@Test
-	public void testDeleteIndex() throws Exception {
+	public void testDeleteIndex() {
 		aerospikeRepository.deleteIndex(Person.class, "index_first_name");
 
 		verify(operations).deleteIndex(Person.class, "index_first_name");
 	}
 
 	@Test
-	public void testIndexExists() throws Exception {
+	public void testIndexExists() {
 		when(operations.indexExists(anyString())).thenReturn(true);
 
 		boolean exists = aerospikeRepository.indexExists("index_first_name");

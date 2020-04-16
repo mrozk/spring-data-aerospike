@@ -2,8 +2,8 @@ package org.springframework.data.aerospike.repository.reactive;
 
 
 import com.aerospike.client.query.IndexType;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.aerospike.BaseReactiveIntegrationTests;
@@ -34,7 +34,7 @@ public class ReactiveAerospikeRepositoryFindRelatedTests extends BaseReactiveInt
     private Customer customer1, customer2, customer3, customer4;
 
 
-    @Before
+    @BeforeEach
     public void setUp() {
         StepVerifier.create(deleteAll()).verifyComplete();
 
