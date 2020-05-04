@@ -21,7 +21,7 @@ The Spring Data Aerospike project aims to provide a familiar and consistent Spri
 
 For a comprehensive treatment of all the Spring Data Aerospike features, please refer to:
 
-* the [User Guide](https://github.com/aerospike-community/spring-data-aerospike/src/main/asciidoc/index.adoc)
+* the [User Guide](https://github.com/aerospike-community/spring-data-aerospike/blob/master/src/main/asciidoc/index.adoc)
 * for more detailed questions, use [Spring Data Aerospike on Stackoverflow](https://stackoverflow.com/questions/tagged/spring-data-aerospike).
 
 If you are new to Spring as well as to Spring Data, look for information about [Spring projects](https://projects.spring.io/).
