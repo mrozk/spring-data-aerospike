@@ -28,6 +28,10 @@ If you are new to Spring as well as to Spring Data, look for information about [
 
 ## Quick Start
 
+### Demo project
+
+Demo project with detailed guides is located [here](https://github.com/aerospike-community/spring-data-aerospike-demo).
+
 ### Maven configuration
 
 Add the Maven dependency:
