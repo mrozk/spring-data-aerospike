@@ -61,6 +61,7 @@ public class ReactiveAerospikeTemplate extends BaseAerospikeTemplate implements 
         Assert.notNull(reactorClient, "Aerospike reactor client must not be null!");
         this.reactorClient = reactorClient;
         this.queryEngine = new ReactorQueryEngine(reactorClient);
+        this.queryEngine.refreshIndexes().block();
     }
 
     @Override
