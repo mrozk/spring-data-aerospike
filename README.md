@@ -13,7 +13,7 @@ The Spring Data Aerospike project aims to provide a familiar and consistent Spri
 
 |`spring-data-aerospike` Version | Spring Boot Version
 | :----------- | :----: |
-|2.3.4.RELEASE |2.2.x
+|2.3.5.RELEASE |2.2.x
 |2.1.1.RELEASE | 2.1.x, 2.0.x
 |1.2.1.RELEASE | 1.5.x
 
@@ -40,7 +40,7 @@ Add the Maven dependency:
 <dependency>
   <groupId>com.aerospike</groupId>
   <artifactId>spring-data-aerospike</artifactId>
-  <version>2.3.4.RELEASE</version>
+  <version>2.3.5.RELEASE</version>
 </dependency>
 ```
 
