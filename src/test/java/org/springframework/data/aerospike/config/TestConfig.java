@@ -16,11 +16,13 @@ import org.springframework.data.aerospike.cache.AerospikeCacheManager;
 import org.springframework.data.aerospike.cache.AerospikeCacheManagerIntegrationTests.CachingComponent;
 import org.springframework.data.aerospike.convert.MappingAerospikeConverter;
 import org.springframework.data.aerospike.core.AerospikeTemplate;
+import org.springframework.data.aerospike.query.QueryEngineTestDataPopulator;
 import org.springframework.data.aerospike.repository.config.EnableAerospikeRepositories;
 import org.springframework.data.aerospike.repository.config.EnableReactiveAerospikeRepositories;
 import org.springframework.data.aerospike.sample.ContactRepository;
 import org.springframework.data.aerospike.sample.CustomerRepository;
 import org.springframework.data.aerospike.sample.ReactiveCustomerRepository;
+import org.testcontainers.containers.GenericContainer;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -79,10 +81,31 @@ public class TestConfig extends AbstractReactiveAerospikeDataConfiguration  {
     @Override
     protected EventLoops eventLoops() {
         return new NioEventLoops();
+// TODO: support parameterized EventLoopType
+//
+//		case DIRECT_NIO: {
+//			return new NioEventLoops(1);
+//		}
+//
+//		case NETTY_NIO: {
+//			EventLoopGroup group = new NioEventLoopGroup(1);
+//			return new NettyEventLoops(group);
+//		}
+//
+//		case NETTY_EPOLL: {
+//			EventLoopGroup group = new EpollEventLoopGroup(1);
+//			return new NettyEventLoops(group);
+//		}
     }
 
     @Bean
-	BlockingAerospikeTestOperations blockingAerospikeTestOperations(AerospikeTemplate template, AerospikeClient client) {
-		return new BlockingAerospikeTestOperations(template, client);
+	BlockingAerospikeTestOperations blockingAerospikeTestOperations(AerospikeTemplate template, AerospikeClient client,
+																	GenericContainer aerospike) {
+		return new BlockingAerospikeTestOperations(template, client, aerospike);
+	}
+
+	@Bean
+	public QueryEngineTestDataPopulator queryEngineTestDataPopulator(AerospikeClient client) {
+		return new QueryEngineTestDataPopulator(nameSpace(), client);
 	}
 }
