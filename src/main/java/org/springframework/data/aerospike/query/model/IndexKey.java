@@ -67,4 +67,14 @@ public class IndexKey {
 	public int hashCode() {
 		return Objects.hash(namespace, set, field, type);
 	}
+
+	@Override
+	public String toString() {
+		return "IndexKey{" +
+				"namespace='" + namespace + '\'' +
+				", set='" + set + '\'' +
+				", field='" + field + '\'' +
+				", type=" + type +
+				'}';
+	}
 }

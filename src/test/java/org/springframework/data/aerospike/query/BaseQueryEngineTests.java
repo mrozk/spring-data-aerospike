@@ -4,8 +4,15 @@ import com.aerospike.client.query.IndexCollectionType;
 import com.aerospike.client.query.IndexType;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.aerospike.AwaitilityUtils;
 import org.springframework.data.aerospike.BaseBlockingIntegrationTests;
 import org.springframework.data.aerospike.IndexUtils;
+import org.springframework.data.aerospike.query.model.Index;
+import org.springframework.data.aerospike.query.model.IndexKey;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class BaseQueryEngineTests extends BaseBlockingIntegrationTests {
 
@@ -32,8 +39,13 @@ public abstract class BaseQueryEngineTests extends BaseBlockingIntegrationTests 
 	}
 
 	protected void tryCreateIndex(String namespace, String setName, String indexName, String binName, IndexType indexType) {
-		IndexUtils.createIndex(client, namespace, setName, indexName, binName, indexType);
-		indexRefresher.refreshIndexes();
+		AwaitilityUtils.awaitTenSecondsUntil(() -> {
+			IndexUtils.createIndex(client, namespace, setName, indexName, binName, indexType);
+			indexRefresher.refreshIndexes();
+			IndexKey indexKey = new IndexKey(namespace, setName, binName, indexType);
+			Optional<Index> index = indexesCache.getIndex(indexKey);
+			assertThat(index).as("Index for: " + indexKey + " not created").isPresent();
+		});
 	}
 
 	protected void tryCreateIndex(String namespace, String setName, String indexName, String binName, IndexType indexType,
