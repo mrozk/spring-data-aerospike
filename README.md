@@ -17,7 +17,7 @@ Demo project with detailed guides is located [here](https://github.com/aerospike
 
 |`spring-data-aerospike` Version | Spring Boot Version
 | :----------- | :----: |
-|2.4.1.RELEASE | 2.3.x
+|2.4.2.RELEASE | 2.3.x
 |2.3.5.RELEASE | 2.2.x
 |2.1.1.RELEASE | 2.1.x, 2.0.x
 |1.2.1.RELEASE | 1.5.x
@@ -32,7 +32,7 @@ Add the Maven dependency:
 <dependency>
   <groupId>com.aerospike</groupId>
   <artifactId>spring-data-aerospike</artifactId>
-  <version>2.4.1.RELEASE</version>
+  <version>2.4.2.RELEASE</version>
 </dependency>
 ```
 
