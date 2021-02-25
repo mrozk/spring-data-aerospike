@@ -1,5 +1,20 @@
-package org.springframework.data.aerospike.cache;
+/*
+ * Copyright 2019 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
+package org.springframework.data.aerospike.cache;
 
 import java.util.concurrent.Callable;
 
@@ -18,7 +33,6 @@ import com.aerospike.client.policy.WritePolicy;
  * 
  * @author Venil Noronha
  */
-//TODO: extract this to the separate repository aerospike-spring-cache
 public class AerospikeCache implements Cache {
 
 	private static final String VALUE = "value";
@@ -27,14 +41,20 @@ public class AerospikeCache implements Cache {
 	protected String namespace;
 	protected String set;
 	protected WritePolicy createOnly;
+	protected WritePolicy writePolicyForPut;
 
-	public AerospikeCache(String namespace, String set, AerospikeClient client,
-			long expiration){
+	public AerospikeCache(AerospikeClient client,
+						  String namespace,
+						  String set,
+						  int expiration) {
 		this.client = client;
 		this.namespace = namespace;
 		this.set = set;
 		this.createOnly = new WritePolicy(client.writePolicyDefault);
 		this.createOnly.recordExistsAction = RecordExistsAction.CREATE_ONLY;
+		this.createOnly.expiration = expiration;
+		this.writePolicyForPut = new WritePolicy(client.writePolicyDefault);
+		this.writePolicyForPut.expiration = expiration;
 	}
 
 	protected Key getKey(Object key){
@@ -52,15 +72,13 @@ public class AerospikeCache implements Cache {
 
 	@Override
 	public void evict(Object key) {
-		this.client.delete(null, getKey(key));
-
+		client.delete(null, getKey(key));
 	}
 
 	@Override
 	public ValueWrapper get(Object key) {
-		Record record =  client.get(null, getKey(key));
-		ValueWrapper vr = toWrapper(record);
-		return vr;
+		Record record = client.get(null, getKey(key));
+		return toWrapper(record);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -71,7 +89,7 @@ public class AerospikeCache implements Cache {
 
 	@Override
 	public String getName() {
-		return this.namespace+":"+this.set;
+		return this.namespace + ":" + this.set;
 	}
 
 	@Override
@@ -81,7 +99,7 @@ public class AerospikeCache implements Cache {
 
 	@Override
 	public void put(Object key, Object value) {
-		client.put(null, getKey(key), new Bin(VALUE, value));
+		client.put(writePolicyForPut, getKey(key), new Bin(VALUE, value));
 	}
 
 	@Override
@@ -95,6 +113,4 @@ public class AerospikeCache implements Cache {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-
 }

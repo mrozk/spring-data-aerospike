@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 the original author or authors.
+ * Copyright 2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,8 +34,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class AerospikeCacheMangerTests extends BaseBlockingIntegrationTests {
 
-	@Autowired AerospikeClient client;
-	@Autowired MappingAerospikeConverter converter;
+	@Autowired
+	AerospikeClient client;
+	@Autowired
+	MappingAerospikeConverter converter;
 
 	@Test
 	public void missingCache() {
@@ -48,8 +50,7 @@ public class AerospikeCacheMangerTests extends BaseBlockingIntegrationTests {
 
 	@Test
 	public void defaultCache() {
-		AerospikeCacheManager manager = new AerospikeCacheManager(client,
-				Arrays.asList("default-cache"), converter);
+		AerospikeCacheManager manager = new AerospikeCacheManager(client, converter, Arrays.asList("default-cache"));
 		manager.afterPropertiesSet();
 		Cache cache = manager.lookupAerospikeCache("default-cache");
 
@@ -59,7 +60,7 @@ public class AerospikeCacheMangerTests extends BaseBlockingIntegrationTests {
 	@Test
 	public void defaultCacheWithCustomizedSet() {
 		AerospikeCacheManager manager = new AerospikeCacheManager(client,
-				Arrays.asList("default-cache"), "custom-set", converter);
+				converter, Arrays.asList("default-cache"), "custom-set", AerospikeCacheManager.DEFAULT_TIME_TO_LIVE);
 		manager.afterPropertiesSet();
 		Cache cache = manager.lookupAerospikeCache("default-cache");
 
@@ -75,5 +76,4 @@ public class AerospikeCacheMangerTests extends BaseBlockingIntegrationTests {
 
 		assertThat(cache).isNotNull().isInstanceOf(TransactionAwareCacheDecorator.class);
 	}
-
 }
