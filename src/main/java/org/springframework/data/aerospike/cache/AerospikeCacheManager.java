@@ -16,7 +16,7 @@
 
 package org.springframework.data.aerospike.cache;
 
-import com.aerospike.client.AerospikeClient;
+import com.aerospike.client.IAerospikeClient;
 import com.aerospike.client.Key;
 import com.aerospike.client.Record;
 import com.aerospike.client.policy.WritePolicy;
@@ -28,7 +28,6 @@ import org.springframework.cache.transaction.TransactionAwareCacheDecorator;
 import org.springframework.data.aerospike.convert.AerospikeConverter;
 import org.springframework.data.aerospike.convert.AerospikeReadData;
 import org.springframework.data.aerospike.convert.AerospikeWriteData;
-import org.springframework.data.aerospike.convert.MappingAerospikeConverter;
 import org.springframework.util.Assert;
 
 import java.util.*;
@@ -49,7 +48,7 @@ public class AerospikeCacheManager extends AbstractTransactionSupportingCacheMan
 	protected static final String DEFAULT_SET_NAME = "aerospike";
 	protected static final int DEFAULT_TIME_TO_LIVE = -1;
 
-	private final AerospikeClient aerospikeClient;
+	private final IAerospikeClient aerospikeClient;
 	private final AerospikeConverter aerospikeConverter;
 	private final String setName;
 	private final Set<String> configuredCacheNames;
@@ -59,11 +58,11 @@ public class AerospikeCacheManager extends AbstractTransactionSupportingCacheMan
 	 * Create a new {@link AerospikeCacheManager} instance -
 	 * Without specifying any additional parameter.
 	 *
-	 * @param aerospikeClient the {@link AerospikeClient} instance.
-	 * @param aerospikeConverter the {@link MappingAerospikeConverter} instance.
+	 * @param aerospikeClient the instance that implements {@link IAerospikeClient}.
+	 * @param aerospikeConverter the instance that implements {@link AerospikeConverter}.
 	 */
-	public AerospikeCacheManager(AerospikeClient aerospikeClient,
-								 MappingAerospikeConverter aerospikeConverter) {
+	public AerospikeCacheManager(IAerospikeClient aerospikeClient,
+								 AerospikeConverter aerospikeConverter) {
 		this(aerospikeClient, aerospikeConverter, Collections.emptyList(), DEFAULT_SET_NAME, DEFAULT_TIME_TO_LIVE);
 	}
 
@@ -71,12 +70,12 @@ public class AerospikeCacheManager extends AbstractTransactionSupportingCacheMan
 	 * Create a new {@link AerospikeCacheManager} instance -
 	 * Specifying the set name.
 	 *
-	 * @param aerospikeClient the {@link AerospikeClient} instance.
-	 * @param aerospikeConverter the {@link MappingAerospikeConverter} instance.
+	 * @param aerospikeClient the instance that implements {@link IAerospikeClient}.
+	 * @param aerospikeConverter the instance that implements {@link AerospikeConverter}.
 	 * @param setName the set name.
 	 */
-	public AerospikeCacheManager(AerospikeClient aerospikeClient,
-								 MappingAerospikeConverter aerospikeConverter,
+	public AerospikeCacheManager(IAerospikeClient aerospikeClient,
+								 AerospikeConverter aerospikeConverter,
 								 String setName) {
 		this(aerospikeClient, aerospikeConverter, Collections.emptyList(), setName, DEFAULT_TIME_TO_LIVE);
 	}
@@ -85,12 +84,12 @@ public class AerospikeCacheManager extends AbstractTransactionSupportingCacheMan
 	 * Create a new {@link AerospikeCacheManager} instance -
 	 * Specifying the cache names.
 	 *
-	 * @param aerospikeClient the {@link AerospikeClient} instance.
-	 * @param aerospikeConverter the {@link MappingAerospikeConverter} instance.
+	 * @param aerospikeClient the instance that implements {@link IAerospikeClient}.
+	 * @param aerospikeConverter the instance that implements {@link AerospikeConverter}.
 	 * @param cacheNames the default caches to create.
 	 */
-	public AerospikeCacheManager(AerospikeClient aerospikeClient,
-								 MappingAerospikeConverter aerospikeConverter,
+	public AerospikeCacheManager(IAerospikeClient aerospikeClient,
+								 AerospikeConverter aerospikeConverter,
 								 Collection<String> cacheNames) {
 		this(aerospikeClient, aerospikeConverter, cacheNames, DEFAULT_SET_NAME, DEFAULT_TIME_TO_LIVE);
 	}
@@ -99,12 +98,12 @@ public class AerospikeCacheManager extends AbstractTransactionSupportingCacheMan
 	 * Create a new {@link AerospikeCacheManager} instance -
 	 * Specifying the time to live configuration.
 	 *
-	 * @param aerospikeClient the {@link AerospikeClient} instance.
-	 * @param aerospikeConverter the {@link MappingAerospikeConverter} instance.
+	 * @param aerospikeClient the instance that implements {@link IAerospikeClient}.
+	 * @param aerospikeConverter the instance that implements {@link AerospikeConverter}.
 	 * @param defaultTimeToLive the time to live configuration.
 	 */
-	public AerospikeCacheManager(AerospikeClient aerospikeClient,
-								 MappingAerospikeConverter aerospikeConverter,
+	public AerospikeCacheManager(IAerospikeClient aerospikeClient,
+								 AerospikeConverter aerospikeConverter,
 								 int defaultTimeToLive) {
 		this(aerospikeClient, aerospikeConverter, Collections.emptyList(), DEFAULT_SET_NAME, defaultTimeToLive);
 	}
@@ -113,13 +112,13 @@ public class AerospikeCacheManager extends AbstractTransactionSupportingCacheMan
 	 * Create a new {@link AerospikeCacheManager} instance -
 	 * Specifying the cache names and set name.
 	 *
-	 * @param aerospikeClient the {@link AerospikeClient} instance.
-	 * @param aerospikeConverter the {@link MappingAerospikeConverter} instance.
+	 * @param aerospikeClient the instance that implements {@link IAerospikeClient}.
+	 * @param aerospikeConverter the instance that implements {@link AerospikeConverter}.
 	 * @param cacheNames the default caches to create.
 	 * @param setName the set name.
 	 */
-	public AerospikeCacheManager(AerospikeClient aerospikeClient,
-								 MappingAerospikeConverter aerospikeConverter,
+	public AerospikeCacheManager(IAerospikeClient aerospikeClient,
+								 AerospikeConverter aerospikeConverter,
 								 Collection<String> cacheNames,
 								 String setName) {
 		this(aerospikeClient, aerospikeConverter, cacheNames, setName, DEFAULT_TIME_TO_LIVE);
@@ -129,13 +128,13 @@ public class AerospikeCacheManager extends AbstractTransactionSupportingCacheMan
 	 * Create a new {@link AerospikeCacheManager} instance -
 	 * Specifying the cache names and time to live configuration.
 	 *
-	 * @param aerospikeClient the {@link AerospikeClient} instance.
-	 * @param aerospikeConverter the {@link MappingAerospikeConverter} instance.
+	 * @param aerospikeClient the instance that implements {@link IAerospikeClient}.
+	 * @param aerospikeConverter the instance that implements {@link AerospikeConverter}.
 	 * @param cacheNames the default caches to create.
 	 * @param defaultTimeToLive the time to live configuration.
 	 */
-	public AerospikeCacheManager(AerospikeClient aerospikeClient,
-								 MappingAerospikeConverter aerospikeConverter,
+	public AerospikeCacheManager(IAerospikeClient aerospikeClient,
+								 AerospikeConverter aerospikeConverter,
 								 Collection<String> cacheNames,
 								 int defaultTimeToLive) {
 		this(aerospikeClient, aerospikeConverter, cacheNames, DEFAULT_SET_NAME, defaultTimeToLive);
@@ -145,13 +144,13 @@ public class AerospikeCacheManager extends AbstractTransactionSupportingCacheMan
 	 * Create a new {@link AerospikeCacheManager} instance -
 	 * Specifying the set name and time to live configuration.
 	 *
-	 * @param aerospikeClient the {@link AerospikeClient} instance.
-	 * @param aerospikeConverter the {@link MappingAerospikeConverter} instance.
+	 * @param aerospikeClient the instance that implements {@link IAerospikeClient}.
+	 * @param aerospikeConverter the instance that implements {@link AerospikeConverter}.
 	 * @param setName the set name.
 	 * @param defaultTimeToLive the time to live configuration.
 	 */
-	public AerospikeCacheManager(AerospikeClient aerospikeClient,
-								 MappingAerospikeConverter aerospikeConverter,
+	public AerospikeCacheManager(IAerospikeClient aerospikeClient,
+								 AerospikeConverter aerospikeConverter,
 								 String setName,
 								 int defaultTimeToLive) {
 		this(aerospikeClient, aerospikeConverter, Collections.emptyList(), setName, defaultTimeToLive);
@@ -161,19 +160,19 @@ public class AerospikeCacheManager extends AbstractTransactionSupportingCacheMan
 	 * Create a new {@link AerospikeCacheManager} instance -
 	 * Specifying the cache names, set name and the time to live configuration.
 	 *
-	 * @param aerospikeClient the {@link AerospikeClient} instance.
-	 * @param aerospikeConverter the {@link MappingAerospikeConverter} instance.
+	 * @param aerospikeClient the instance that implements {@link IAerospikeClient}.
+	 * @param aerospikeConverter the instance that implements {@link AerospikeConverter}.
 	 * @param cacheNames the default caches to create.
 	 * @param setName the set name.
 	 * @param defaultTimeToLive the time to live configuration.
 	 */
-	public AerospikeCacheManager(AerospikeClient aerospikeClient,
-								 MappingAerospikeConverter aerospikeConverter,
+	public AerospikeCacheManager(IAerospikeClient aerospikeClient,
+								 AerospikeConverter aerospikeConverter,
 								 Collection<String> cacheNames,
 								 String setName,
 								 int defaultTimeToLive) {
-		Assert.notNull(aerospikeClient, "AerospikeClient must not be null");
-		Assert.notNull(aerospikeConverter, "MappingAerospikeConverter must not be null");
+		Assert.notNull(aerospikeClient, "The aerospike client must not be null");
+		Assert.notNull(aerospikeConverter, "The aerospike converter must not be null");
 		Assert.notNull(cacheNames, "Cache names must not be null");
 		Assert.notNull(setName, "Set name must not be null");
 		this.aerospikeClient = aerospikeClient;

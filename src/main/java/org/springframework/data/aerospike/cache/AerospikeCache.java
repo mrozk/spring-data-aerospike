@@ -21,7 +21,7 @@ import java.util.concurrent.Callable;
 import org.springframework.cache.Cache;
 import org.springframework.cache.support.SimpleValueWrapper;
 
-import com.aerospike.client.AerospikeClient;
+import com.aerospike.client.IAerospikeClient;
 import com.aerospike.client.Bin;
 import com.aerospike.client.Key;
 import com.aerospike.client.Operation;
@@ -43,25 +43,23 @@ public class AerospikeCache implements Cache {
 
 	private static final String VALUE = "value";
 
-	protected AerospikeClient client;
+	protected IAerospikeClient client;
 	protected String namespace;
 	protected String set;
 	protected WritePolicy createOnly;
 	protected WritePolicy writePolicyForPut;
 
-	public AerospikeCache(AerospikeClient client,
+	public AerospikeCache(IAerospikeClient client,
 						  String namespace,
 						  String set,
 						  int expiration) {
 		this.client = client;
 		this.namespace = namespace;
 		this.set = set;
-
-		this.createOnly = new WritePolicy(client.writePolicyDefault);
+		this.createOnly = new WritePolicy(client.getWritePolicyDefault());
 		this.createOnly.recordExistsAction = RecordExistsAction.CREATE_ONLY;
 		this.createOnly.expiration = expiration;
-
-		this.writePolicyForPut = new WritePolicy(client.writePolicyDefault);
+		this.writePolicyForPut = new WritePolicy(client.getWritePolicyDefault());
 		this.writePolicyForPut.expiration = expiration;
 	}
 
