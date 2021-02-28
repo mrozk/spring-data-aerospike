@@ -28,12 +28,18 @@ import com.aerospike.client.Operation;
 import com.aerospike.client.Record;
 import com.aerospike.client.policy.RecordExistsAction;
 import com.aerospike.client.policy.WritePolicy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Objects;
 
 /**
  * 
  * @author Venil Noronha
  */
 public class AerospikeCache implements Cache {
+
+	private final Logger log = LoggerFactory.getLogger(AerospikeCache.class);
 
 	private static final String VALUE = "value";
 
@@ -50,9 +56,11 @@ public class AerospikeCache implements Cache {
 		this.client = client;
 		this.namespace = namespace;
 		this.set = set;
+
 		this.createOnly = new WritePolicy(client.writePolicyDefault);
 		this.createOnly.recordExistsAction = RecordExistsAction.CREATE_ONLY;
 		this.createOnly.expiration = expiration;
+
 		this.writePolicyForPut = new WritePolicy(client.writePolicyDefault);
 		this.writePolicyForPut.expiration = expiration;
 	}
@@ -67,7 +75,7 @@ public class AerospikeCache implements Cache {
 
 	@Override
 	public void clear() {
-		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("clear");
 	}
 
 	@Override
@@ -84,7 +92,7 @@ public class AerospikeCache implements Cache {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T get(Object key, Class<T> type) {
-		return (T) client.get(null, getKey(key));
+		return (T) client.get(null, getKey(key)).getValue(VALUE);
 	}
 
 	@Override
@@ -109,8 +117,19 @@ public class AerospikeCache implements Cache {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public <T> T get(Object key, Callable<T> valueLoader) {
-		// TODO Auto-generated method stub
-		return null;
+		T value = (T) client.get(null, getKey(key)).getValue(VALUE);
+		if (Objects.isNull(value)) {
+			try {
+				value = valueLoader.call();
+				if (Objects.nonNull(value)) {
+					put(key, value);
+				}
+			} catch (Exception e) {
+				log.warn("valueLoader exception", e);
+			}
+		}
+		return value;
 	}
 }
