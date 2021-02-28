@@ -73,7 +73,7 @@ public class AerospikeCache implements Cache {
 
 	@Override
 	public void clear() {
-		throw new UnsupportedOperationException("clear");
+		client.truncate(null, namespace, set, null);
 	}
 
 	@Override
