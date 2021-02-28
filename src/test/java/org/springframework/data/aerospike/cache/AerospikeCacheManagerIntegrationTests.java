@@ -72,6 +72,19 @@ public class AerospikeCacheManagerIntegrationTests extends BaseBlockingIntegrati
     }
 
     @Test
+    public void shouldNotEvictCacheEvictingDifferentKey() {
+        CachedObject response1 = cachingComponent.cacheableMethod(KEY);
+        cachingComponent.cacheEvictMethod("not-the-relevant-key");
+        CachedObject response2 = cachingComponent.cacheableMethod(KEY);
+
+        assertThat(response1).isNotNull();
+        assertThat(response1.getValue()).isEqualTo(VALUE);
+        assertThat(response2).isNotNull();
+        assertThat(response2.getValue()).isEqualTo(VALUE);
+        assertThat(cachingComponent.getNoOfCalls()).isEqualTo(1);
+    }
+
+    @Test
     public void shouldCacheUsingCachePut() {
         CachedObject response1 = cachingComponent.cachePutMethod(KEY);
         CachedObject response2 = cachingComponent.cacheableMethod(KEY);
