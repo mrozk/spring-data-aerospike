@@ -190,7 +190,7 @@ public class AerospikeCacheManager extends AbstractTransactionSupportingCacheMan
 		return createCache(cacheName);
 	}
 
-	protected AerospikeCache createCache(String cacheName) {
+	private AerospikeCache createCache(String cacheName) {
 		return new AerospikeCache(aerospikeClient, aerospikeConverter, cacheName, setName, defaultTimeToLive);
 	}
 
@@ -222,7 +222,7 @@ public class AerospikeCacheManager extends AbstractTransactionSupportingCacheMan
 		return super.decorateCache(cache);
 	}
 
-	protected boolean isCacheAlreadyDecorated(Cache cache) {
+	private boolean isCacheAlreadyDecorated(Cache cache) {
 		return isTransactionAware() && cache instanceof TransactionAwareCacheDecorator;
 	}
 }

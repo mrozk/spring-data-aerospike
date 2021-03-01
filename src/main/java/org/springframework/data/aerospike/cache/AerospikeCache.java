@@ -42,12 +42,12 @@ public class AerospikeCache implements Cache {
 
 	private static final String VALUE = "value";
 
-	protected IAerospikeClient client;
-	protected AerospikeConverter aerospikeConverter;
-	protected String namespace;
-	protected String set;
-	protected WritePolicy createOnly;
-	protected WritePolicy writePolicyForPut;
+	private final IAerospikeClient client;
+	private final AerospikeConverter aerospikeConverter;
+	private final String namespace;
+	private final String set;
+	private final WritePolicy createOnly;
+	private final WritePolicy writePolicyForPut;
 
 	public AerospikeCache(IAerospikeClient client,
 						  AerospikeConverter aerospikeConverter,
@@ -65,7 +65,7 @@ public class AerospikeCache implements Cache {
 		this.writePolicyForPut.expiration = expiration;
 	}
 
-	protected Key getKey(Object key){
+	private Key getKey(Object key){
 		return new Key(namespace, set, key.toString());
 	}
 
