@@ -35,7 +35,7 @@ import org.springframework.data.aerospike.convert.AerospikeWriteData;
 import java.util.Objects;
 
 /**
- * 
+ *
  * @author Venil Noronha
  */
 public class AerospikeCache implements Cache {
@@ -114,8 +114,7 @@ public class AerospikeCache implements Cache {
 		Record record =  client.get(null, dbKey);
 		if (record != null) {
 			AerospikeReadData data = AerospikeReadData.forRead(dbKey, record);
-			T value = aerospikeConverter.read(type, data);
-			return value;
+			return aerospikeConverter.read(type, data);
 		}
 		return null;
 	}
