@@ -76,7 +76,7 @@ public class AerospikeCacheManager extends AbstractTransactionSupportingCacheMan
 
 	/**
 	 * Create a new {@link AerospikeCacheManager} instance -
-	 * Specifying the cache names.
+	 * Specifying the cache names (Aerospike namespaces).
 	 *
 	 * @param aerospikeClient the instance that implements {@link IAerospikeClient}.
 	 * @param aerospikeConverter the instance that implements {@link AerospikeConverter}.
@@ -104,7 +104,7 @@ public class AerospikeCacheManager extends AbstractTransactionSupportingCacheMan
 
 	/**
 	 * Create a new {@link AerospikeCacheManager} instance -
-	 * Specifying the cache names and set name.
+	 * Specifying the cache names (Aerospike namespaces) and set name.
 	 *
 	 * @param aerospikeClient the instance that implements {@link IAerospikeClient}.
 	 * @param aerospikeConverter the instance that implements {@link AerospikeConverter}.
@@ -120,7 +120,7 @@ public class AerospikeCacheManager extends AbstractTransactionSupportingCacheMan
 
 	/**
 	 * Create a new {@link AerospikeCacheManager} instance -
-	 * Specifying the cache names and time to live configuration.
+	 * Specifying the cache names (Aerospike namespaces) and time to live configuration.
 	 *
 	 * @param aerospikeClient the instance that implements {@link IAerospikeClient}.
 	 * @param aerospikeConverter the instance that implements {@link AerospikeConverter}.
@@ -152,7 +152,7 @@ public class AerospikeCacheManager extends AbstractTransactionSupportingCacheMan
 
 	/**
 	 * Create a new {@link AerospikeCacheManager} instance -
-	 * Specifying the cache names, set name and the time to live configuration.
+	 * Specifying the cache names (Aerospike namespaces), set name and the time to live configuration.
 	 *
 	 * @param aerospikeClient the instance that implements {@link IAerospikeClient}.
 	 * @param aerospikeConverter the instance that implements {@link AerospikeConverter}.
@@ -186,7 +186,7 @@ public class AerospikeCacheManager extends AbstractTransactionSupportingCacheMan
 	}
 
 	@Override
-	protected Cache getMissingCache(String cacheName) {
+	protected AerospikeCache getMissingCache(String cacheName) {
 		return createCache(cacheName);
 	}
 
@@ -194,24 +194,12 @@ public class AerospikeCacheManager extends AbstractTransactionSupportingCacheMan
 		return new AerospikeCache(aerospikeClient, aerospikeConverter, cacheName, setName, defaultTimeToLive);
 	}
 
-	@Override
-	public Cache getCache(String name) {
-		Cache cache = lookupAerospikeCache(name);
-		if (cache != null) {
-			return cache;
-		}
-		else {
-			Cache missingCache = getMissingCache(name);
-			if (missingCache != null) {
-				addCache(missingCache);
-				return lookupAerospikeCache(name);  // may be decorated
-			}
-			return null;
-		}
+	protected Cache getAerospikeCache(String cacheName) {
+		return getCache(AerospikeCacheUtils.getFullAerospikeCacheName(cacheName, setName));
 	}
 
-	protected Cache lookupAerospikeCache(String name) {
-		return lookupCache(name + ":" + setName);
+	protected Cache lookupAerospikeCache(String cacheName) {
+		return lookupCache(AerospikeCacheUtils.getFullAerospikeCacheName(cacheName, setName));
 	}
 
 	@Override

@@ -43,7 +43,7 @@ public class AerospikeCacheMangerTests extends BaseBlockingIntegrationTests {
 	public void missingCache() {
 		AerospikeCacheManager manager = new AerospikeCacheManager(client, converter);
 		manager.afterPropertiesSet();
-		Cache cache = manager.getCache("missing-cache");
+		Cache cache = manager.getAerospikeCache("missing-cache");
 
 		assertThat(cache).isNotNull();
 	}
@@ -72,7 +72,7 @@ public class AerospikeCacheMangerTests extends BaseBlockingIntegrationTests {
 		AerospikeCacheManager manager = new AerospikeCacheManager(client, converter);
 		manager.setTransactionAware(true);
 		manager.afterPropertiesSet();
-		Cache cache = manager.getCache("transaction-aware-cache");
+		Cache cache = manager.getAerospikeCache("transaction-aware-cache");
 
 		assertThat(cache).isNotNull().isInstanceOf(TransactionAwareCacheDecorator.class);
 	}

@@ -81,7 +81,7 @@ public class AerospikeCache implements Cache {
 
 	@Override
 	public String getName() {
-		return this.namespace + ":" + this.set;
+		return AerospikeCacheUtils.getFullAerospikeCacheName(namespace, set);
 	}
 
 	@Override
