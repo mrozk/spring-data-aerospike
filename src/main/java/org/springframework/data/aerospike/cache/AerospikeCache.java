@@ -33,6 +33,8 @@ import java.util.Objects;
 import java.util.concurrent.Callable;
 
 /**
+ * A Cache {@link org.springframework.cache.Cache} implementation backed by Aerospike database as store.
+ * Create and configure Aerospike cache instances via {@link AerospikeCacheManager}.
  *
  * @author Venil Noronha
  */
