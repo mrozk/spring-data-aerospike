@@ -17,17 +17,11 @@
 package org.springframework.data.aerospike.cache;
 
 import com.aerospike.client.IAerospikeClient;
-import com.aerospike.client.Key;
-import com.aerospike.client.Record;
-import com.aerospike.client.policy.WritePolicy;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.support.SimpleValueWrapper;
 import org.springframework.cache.transaction.AbstractTransactionSupportingCacheManager;
 import org.springframework.cache.transaction.TransactionAwareCacheDecorator;
 import org.springframework.data.aerospike.convert.AerospikeConverter;
-import org.springframework.data.aerospike.convert.AerospikeReadData;
-import org.springframework.data.aerospike.convert.AerospikeWriteData;
 import org.springframework.util.Assert;
 
 import java.util.*;
@@ -197,7 +191,7 @@ public class AerospikeCacheManager extends AbstractTransactionSupportingCacheMan
 	}
 
 	protected AerospikeCache createCache(String cacheName) {
-		return new AerospikeSerializingCache(cacheName);
+		return new AerospikeCache(aerospikeClient, aerospikeConverter, cacheName, setName, defaultTimeToLive);
 	}
 
 	@Override
@@ -230,47 +224,5 @@ public class AerospikeCacheManager extends AbstractTransactionSupportingCacheMan
 
 	protected boolean isCacheAlreadyDecorated(Cache cache) {
 		return isTransactionAware() && cache instanceof TransactionAwareCacheDecorator;
-	}
-
-	public class AerospikeSerializingCache extends AerospikeCache {
-
-		public AerospikeSerializingCache(String namespace) {
-			super(aerospikeClient, namespace, setName, defaultTimeToLive);
-		}
-
-		@Override
-		public <T> T get(Object key, Class<T> type) {
-			Key dbKey = getKey(key);
-			Record record =  client.get(null, dbKey);
-			if (record != null) {
-				AerospikeReadData data = AerospikeReadData.forRead(dbKey, record);
-				T value = aerospikeConverter.read(type, data);
-				return value;
-			}
-			return null;
-		}
-
-		@Override
-		public ValueWrapper get(Object key) {
-			Object value = get(key, Object.class);
-			return (value != null ? new SimpleValueWrapper(value) : null);
-		}
-
-		@Override
-		public void put(Object key, Object value) {
-			serializeAndPut(writePolicyForPut, key, value);
-		}
-
-		@Override
-		public ValueWrapper putIfAbsent(Object key, Object value) {
-			serializeAndPut(createOnly, key, value);
-			return get(key);
-		}
-
-		private void serializeAndPut(WritePolicy writePolicy, Object key, Object value) {
-			AerospikeWriteData data = AerospikeWriteData.forWrite();
-			aerospikeConverter.write(value, data);
-			client.put(writePolicy, getKey(key), data.getBinsAsArray());
-		}
 	}
 }
