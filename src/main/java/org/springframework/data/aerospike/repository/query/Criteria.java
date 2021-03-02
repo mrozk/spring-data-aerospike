@@ -1,23 +1,32 @@
-/**
- * 
+/*
+ * Copyright 2012-2020 the original author or authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.springframework.data.aerospike.repository.query;
+
+import com.aerospike.client.Value;
+import org.springframework.data.aerospike.InvalidAerospikeDataAccessApiUsageException;
+import org.springframework.data.aerospike.query.Qualifier;
+import org.springframework.data.aerospike.query.Qualifier.FilterOperation;
+import org.springframework.data.repository.query.parser.Part.IgnoreCaseType;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import org.springframework.core.convert.support.DefaultConversionService;
-import org.springframework.data.aerospike.InvalidAerospikeDataAccessApiUsageException;
-import org.springframework.data.repository.query.parser.Part.IgnoreCaseType;
-import org.springframework.util.CollectionUtils;
-
-import com.aerospike.client.Value;
-import org.springframework.data.aerospike.query.Qualifier;
-import org.springframework.data.aerospike.query.Qualifier.FilterOperation;
-
 /**
- *
  *
  * @author Peter Milne
  * @author Jean Mercier
@@ -27,15 +36,13 @@ public class Criteria implements CriteriaDefinition {
 
 	private static final Object NOT_SET = new Object();
 
-	DefaultConversionService cs = new DefaultConversionService();
-
 	private String key;
-	private List<Criteria> criteriaChain;
-	private LinkedHashMap<String, Object> criteria = new LinkedHashMap<String, Object>();
+	private final List<Criteria> criteriaChain;
+	private final LinkedHashMap<String, Object> criteria = new LinkedHashMap<>();
 	private Object isValue = NOT_SET;
 
 	public Criteria(String key) {
-		this.criteriaChain = new ArrayList<Criteria>();
+		this.criteriaChain = new ArrayList<>();
 		this.criteriaChain.add(this);
 		this.key = key;
 	}
@@ -46,11 +53,8 @@ public class Criteria implements CriteriaDefinition {
 		this.key = key;
 	}
 
-	/**
-	 * 
-	 */
 	public Criteria() {
-		this.criteriaChain = new ArrayList<Criteria>();
+		this.criteriaChain = new ArrayList<>();
 	}
 
 	/*
@@ -68,11 +72,11 @@ public class Criteria implements CriteriaDefinition {
 			return getSingleCriteriaObject();
 		} else {
 			FilterOperation op = FilterOperation.valueOf(key);
-			List<Qualifier> qualifiers = new ArrayList<Qualifier>();
+			List<Qualifier> qualifiers = new ArrayList<>();
 			for (Criteria c : this.criteriaChain) {
 				qualifiers.add(c.getCriteriaObject());
 			}
-			return new Qualifier(op, (Qualifier[]) qualifiers.toArray(new Qualifier[qualifiers.size()]));
+			return new Qualifier(op, qualifiers.toArray(new Qualifier[0]));
 		}
 	}
 
@@ -98,29 +102,19 @@ public class Criteria implements CriteriaDefinition {
 	}
 
 	/**
-	 * Static factory method to create a Criteria using the provided key
+	 * Static factory method to create a Criteria using the provided key.
 	 * 
-	 * @param key
-	 * @return
+	 * @param key the provided key
+	 * @return the Criteria instance
 	 */
 	public static Criteria where(String key) {
 		return new Criteria(key);
 	}
 
-	/**
-	 * Static factory method to create a Criteria using the provided key
-	 * 
-	 * @return
-	 */
 	public Criteria and(String key) {
 		return new Criteria(this.criteriaChain, key);
 	}
-	
-	/**
-	 * @param property
-	 * @param next
-	 * @return
-	 */
+
 	public Criteria gt(Object o, String propertyName) {
 		Qualifier qualifier = new Qualifier(propertyName,
 				Qualifier.FilterOperation.GT, Value.get(o));
@@ -129,23 +123,14 @@ public class Criteria implements CriteriaDefinition {
 		return this;
 	}
 
-	/**
-	 * @param next
-	 * @return
-	 */
 	public Criteria gte(Object o,String propertyName) {
 		Qualifier qualifier = new Qualifier(propertyName,
 				Qualifier.FilterOperation.GTEQ, Value.get(o));
 		this.isValue = o;
 		this.criteria.put(Qualifier.FilterOperation.GTEQ.name(), qualifier);
 		return this;
-
 	}
 
-	/**
-	 * @param next
-	 * @return
-	 */
 	public Criteria lt(Object o,String propertyName) {
 		Qualifier qualifier = new Qualifier(propertyName,
 				Qualifier.FilterOperation.LT, Value.get(o));
@@ -154,10 +139,6 @@ public class Criteria implements CriteriaDefinition {
 		return this;
 	}
 
-	/**
-	 * @param next
-	 * @return
-	 */
 	public Criteria lte(Object o,String propertyName) {
 		Qualifier qualifier = new Qualifier(propertyName,
 				Qualifier.FilterOperation.LTEQ, Value.get(o));
@@ -166,26 +147,16 @@ public class Criteria implements CriteriaDefinition {
 		return this;
 	}
 
-	/**
-	 * @param object
-	 * @return
-	 */
 	public Criteria ne(Object object) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	/**
-	 * @return
-	 */
 	private boolean lastOperatorWasNot() {
 		return this.criteria.size() > 0 && "$not".equals(
 				this.criteria.keySet().toArray()[this.criteria.size() - 1]);
 	}
 
-	/**
-	 * @return
-	 */
 	@SuppressWarnings("unused")
 	private boolean lastOperatorWasNotEqual() {
 		return this.criteria.size() > 0
@@ -193,28 +164,17 @@ public class Criteria implements CriteriaDefinition {
 						.keySet().toArray()[this.criteria.size() - 1]);
 	}
 
-	/**
-	 * @return
-	 */
 	private boolean lastOperatorWasNotRange() {
 		return this.criteria.size() > 0
 				&& Qualifier.FilterOperation.BETWEEN.name().equals(this.criteria
 						.keySet().toArray()[this.criteria.size() - 1]);
 	}
 
-	/**
-	 * @param nextAsArray
-	 * @return
-	 */
 	public Criteria nin(Object nextAsArray) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	/**
-	 * @param next
-	 * @return
-	 */
 	public Criteria in(Object next) {
 		// TODO Auto-generated method stub
 		return null;
@@ -222,9 +182,6 @@ public class Criteria implements CriteriaDefinition {
 
 	/**
 	 * Creates an 'or' criteria using the $or operator for all of the provided criteria
-	 *
-	 * @throws IllegalArgumentException if {@link #orOperator(Criteria...)} follows a not() call directly.
-	 * @param criteria
 	 */
 	public Criteria orOperator(Criteria... criteria) {
 		this.key = Qualifier.FilterOperation.OR.name();
@@ -243,8 +200,6 @@ public class Criteria implements CriteriaDefinition {
 		return this;
 	}
 
-
-
 	/**
 	 * @return the criteriaChain
 	 */
@@ -252,12 +207,6 @@ public class Criteria implements CriteriaDefinition {
 		return criteriaChain;
 	}
 
-	/**
-	 * @param next
-	 * @param part
-	 * @param criteria2
-	 * @return
-	 */
 	public Criteria is(Object o, String propertyName) {
 		if (!isValue.equals(NOT_SET)) {
 			throw new InvalidAerospikeDataAccessApiUsageException(
@@ -273,66 +222,41 @@ public class Criteria implements CriteriaDefinition {
 			throw new InvalidAerospikeDataAccessApiUsageException(
 					"Invalid query: cannot combine range with is");
 		}
+
 		Qualifier qualifier = new Qualifier(propertyName,
 				Qualifier.FilterOperation.EQ, Value.get(o));
+
 		this.isValue = o;
 		this.criteria.put(Qualifier.FilterOperation.EQ.name(), qualifier);
 		return this;
 	}
 
-	/**
-	 * @param next
-	 * @param next2
-	 * @param part
-	 * @param criteria2
-	 * @return
-	 */
 	public Criteria between(Object o1, Object o2,String propertyName) {
 		Qualifier qualifier = new Qualifier(propertyName,
 				Qualifier.FilterOperation.BETWEEN, Value.get(o1),
 				Value.get(o2));
 		this.criteria.put(Qualifier.FilterOperation.BETWEEN.name(), qualifier);
 		return this;
-
 	}
 
-	/**
-	 * @param next
-	 * @param part
-	 * @param criteria2
-	 * @return
-	 */
 	public Criteria startingWith(Object o,String propertyName, IgnoreCaseType ignoreCase) {
 		Qualifier qualifier = new Qualifier(propertyName,
 				Qualifier.FilterOperation.START_WITH, ignoreCase==IgnoreCaseType.ALWAYS, Value.get(o));
 		this.criteria.put(Qualifier.FilterOperation.START_WITH.name(),
 				qualifier);
 		return this;
-
 	}
 
-	/**
-	 * @param next
-	 * @param part
-	 * @param criteria2
-	 * @return
-	 */
 	public Criteria containing(Object o,String propertyName, IgnoreCaseType ignoreCase) {
 		Qualifier qualifier = new Qualifier(propertyName,
 				Qualifier.FilterOperation.CONTAINING, ignoreCase==IgnoreCaseType.ALWAYS, Value.get(o));
 		this.criteria.put(Qualifier.FilterOperation.CONTAINING.name(),
 				qualifier);
 		return this;
-
 	}
 
 	/***
-	 * GEO Query with distance from a geo location given longitude/latitude 
-	 * @param lng
-	 * @param lat
-	 * @param radius
-	 * @param propertyName
-	 * @return
+	 * GEO Query with distance from a geo location given longitude/latitude
 	 */
 	public Criteria geo_within(Object lng, Object lat, Object radius, String propertyName) {
 		Qualifier qualifier = new Qualifier(propertyName,
