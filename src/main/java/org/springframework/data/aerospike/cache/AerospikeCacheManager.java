@@ -186,7 +186,7 @@ public class AerospikeCacheManager extends AbstractTransactionSupportingCacheMan
 	}
 
 	@Override
-	protected AerospikeCache getMissingCache(String cacheName) {
+	protected Cache getMissingCache(String cacheName) {
 		return createCache(cacheName);
 	}
 
@@ -195,7 +195,7 @@ public class AerospikeCacheManager extends AbstractTransactionSupportingCacheMan
 	}
 
 	protected Cache getAerospikeCache(String cacheName) {
-		return getCache(AerospikeCacheUtils.getFullAerospikeCacheName(cacheName, setName));
+		return getCache(cacheName);
 	}
 
 	protected Cache lookupAerospikeCache(String cacheName) {
