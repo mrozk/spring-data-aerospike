@@ -25,6 +25,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.aerospike.BaseBlockingIntegrationTests;
+import org.springframework.data.aerospike.core.AerospikeOperations;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,6 +39,10 @@ public class AerospikeCacheManagerIntegrationTests extends BaseBlockingIntegrati
     AerospikeClient client;
     @Autowired
     CachingComponent cachingComponent;
+    @Autowired
+    AerospikeOperations aerospikeOperations;
+    @Autowired
+    AerospikeCacheManager aerospikeCacheManager;
 
     @AfterEach
     public void tearDown() {
@@ -138,6 +143,24 @@ public class AerospikeCacheManagerIntegrationTests extends BaseBlockingIntegrati
         assertThat(response2.getValue()).isEqualTo(VALUE);
         assertThat(response3).isNotNull();
         assertThat(response3.getValue()).isEqualTo(VALUE);
+    }
+
+    @Test
+    public void shouldClearCache() throws InterruptedException {
+        CachedObject response1 = cachingComponent.cacheableMethod(KEY);
+        assertThat(aerospikeOperations.count(CachedObject.class, AerospikeCacheManager.DEFAULT_SET_NAME)).isEqualTo(1);
+        aerospikeCacheManager.getAerospikeCache("TEST").clear();
+        Thread.sleep(500);
+        assertThat(aerospikeOperations.count(CachedObject.class, AerospikeCacheManager.DEFAULT_SET_NAME)).isEqualTo(0);
+    }
+
+    @Test
+    public void shouldNotClearCacheClearingDifferentCache() throws InterruptedException {
+        CachedObject response1 = cachingComponent.cacheableMethod(KEY);
+        assertThat(aerospikeOperations.count(CachedObject.class, AerospikeCacheManager.DEFAULT_SET_NAME)).isEqualTo(1);
+        aerospikeCacheManager.getAerospikeCache("DIFFERENT-CACHE").clear();
+        Thread.sleep(500);
+        assertThat(aerospikeOperations.count(CachedObject.class, AerospikeCacheManager.DEFAULT_SET_NAME)).isEqualTo(1);
     }
 
     public static class CachingComponent {
