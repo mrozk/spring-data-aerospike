@@ -20,6 +20,7 @@ import com.aerospike.client.Value;
 import org.springframework.data.aerospike.query.Qualifier;
 
 /**
+ *
  * @author Michael Zhang
  * @author Jeff Boone
  * 
@@ -39,16 +40,14 @@ public class AerospikeCriteria extends Qualifier implements CriteriaDefinition {
 	}
 
 	/**
-	 * Creates an 'or' criteria using the $or operator for all of the provided criteria
+	 * Creates an 'or' criteria using the $or operator for all of the provided criteria.
 	 *
-	 * @throws IllegalArgumentException if {@link #orOperator(Criteria...)} follows a not() call directly.
-	 * @param criteria
+	 * @throws IllegalArgumentException if follows a not() call directly.
+	 * @param criteria the AerospikeCriteria instance.
 	 */
 	public static AerospikeCriteria or(AerospikeCriteria... criteria) {
 		return new AerospikeCriteria(Qualifier.FilterOperation.OR, criteria);
 	}
-	
-
 
 	/* (non-Javadoc)
 	 * @see org.springframework.data.aerospike.repository.query.CriteriaDefinition#getCriteriaObject()

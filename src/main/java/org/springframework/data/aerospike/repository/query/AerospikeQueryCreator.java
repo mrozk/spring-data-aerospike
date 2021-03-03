@@ -20,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.aerospike.mapping.AerospikeMappingContext;
 import org.springframework.data.aerospike.mapping.AerospikePersistentProperty;
-import org.springframework.data.aerospike.mapping.CachingAerospikePersistentProperty;
 import org.springframework.data.aerospike.query.Qualifier.FilterOperation;
 import org.springframework.data.aerospike.repository.query.CriteriaDefinition.AerospikeMapCriteria;
 import org.springframework.data.domain.Sort;
@@ -37,7 +36,6 @@ import java.util.Iterator;
 
 /**
  *
- *
  * @author Peter Milne
  * @author Jean Mercier
  *
@@ -45,22 +43,15 @@ import java.util.Iterator;
 public class AerospikeQueryCreator extends 	AbstractQueryCreator<Query, AerospikeCriteria> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AerospikeQueryCreator.class);
-	private MappingContext<?, AerospikePersistentProperty> context;
+	private final MappingContext<?, AerospikePersistentProperty> context;
 
-	/**
-	 * @param tree
-	 * @param parameters
-	 */
 	public AerospikeQueryCreator(PartTree tree, ParameterAccessor parameters) {
 		super(tree, parameters);
 		this.context = new AerospikeMappingContext();
 	}
 
-	/**
-	 * @param tree
-	 * @param parameters
-	 */
-	public AerospikeQueryCreator(PartTree tree, ParameterAccessor parameters,MappingContext<?, AerospikePersistentProperty> context) {
+	public AerospikeQueryCreator(PartTree tree, ParameterAccessor parameters,
+								 MappingContext<?, AerospikePersistentProperty> context) {
 		super(tree, parameters);
 		this.context = context;
 	}
@@ -74,8 +65,9 @@ public class AerospikeQueryCreator extends 	AbstractQueryCreator<Query, Aerospik
 		AerospikePersistentProperty property = path.getLeafProperty();
 		return create(part, property, iterator);
 	}
+
 	private AerospikeCriteria create(Part part, AerospikePersistentProperty property, Iterator<?> parameters){
-		String fieldName = ((CachingAerospikePersistentProperty) property).getFieldName();
+		String fieldName = property.getFieldName();
 		IgnoreCaseType ignoreCase = part.shouldIgnoreCase();
 		FilterOperation op;
 		Object v1 = parameters.next(), v2 = null;
@@ -91,7 +83,7 @@ public class AerospikeQueryCreator extends 	AbstractQueryCreator<Query, Aerospik
 		case LESS_THAN_EQUAL:
 			op = FilterOperation.LTEQ; break;
 		case BETWEEN:
-			op = FilterOperation.BETWEEN; 
+			op = FilterOperation.BETWEEN;
 			v2 = parameters.next();
 			break;
 		case LIKE:
@@ -102,7 +94,7 @@ public class AerospikeQueryCreator extends 	AbstractQueryCreator<Query, Aerospik
 		case CONTAINING:
 			op = FilterOperation.CONTAINING; break;
 		case WITHIN:
-			op = FilterOperation.GEO_WITHIN; 
+			op = FilterOperation.GEO_WITHIN;
 			v1 = Value.get(String.format("{ \"type\": \"AeroCircle\", \"coordinates\": [[%.8f, %.8f], %f] }",
 					  v1, parameters.next(), parameters.next()));
 			break;
@@ -115,7 +107,7 @@ public class AerospikeQueryCreator extends 	AbstractQueryCreator<Query, Aerospik
 		default:
 			throw new IllegalArgumentException("Unsupported keyword!");
 		}
-		
+
 		//customization for collection/map query
 		TypeInformation<?> propertyType = property.getTypeInformation();
 		if (propertyType.isCollectionLike()) {
@@ -139,8 +131,11 @@ public class AerospikeQueryCreator extends 	AbstractQueryCreator<Query, Aerospik
 					break;
 			}
 		}
-		if(null == v2)return new AerospikeCriteria(fieldName, op,  ignoreCase==IgnoreCaseType.ALWAYS, Value.get(v1));
-		else return new AerospikeCriteria(fieldName, op, Value.get(v1), Value.get(v2));
+
+		if(null == v2)
+			return new AerospikeCriteria(fieldName, op,  ignoreCase==IgnoreCaseType.ALWAYS, Value.get(v1));
+
+		return new AerospikeCriteria(fieldName, op, Value.get(v1), Value.get(v2));
 	}
 
 	/* (non-Javadoc)
@@ -151,12 +146,11 @@ public class AerospikeQueryCreator extends 	AbstractQueryCreator<Query, Aerospik
 		if (base == null) {
 			return create(part, iterator);
 		}
+
 		PersistentPropertyPath<AerospikePersistentProperty> path = context.getPersistentPropertyPath(part.getProperty());
 		AerospikePersistentProperty property = path.getLeafProperty();
-		
-		return new AerospikeCriteria(FilterOperation.AND, base, create(part, property, iterator));
 
-		//return from(part, property, Criteria.where(path.toDotPath()), iterator);
+		return new AerospikeCriteria(FilterOperation.AND, base, create(part, property, iterator));
 	}
 
 	/* (non-Javadoc)
@@ -172,7 +166,7 @@ public class AerospikeQueryCreator extends 	AbstractQueryCreator<Query, Aerospik
 	 */
 	@Override
 	protected Query complete(AerospikeCriteria criteria, Sort sort) {
-		Query query = (criteria == null ? null : new Query(criteria)).with(sort);
+		Query query = criteria == null ? null : new Query(criteria).with(sort);
 
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("Created query " + query);
@@ -184,12 +178,11 @@ public class AerospikeQueryCreator extends 	AbstractQueryCreator<Query, Aerospik
 	@SuppressWarnings("unused")
 	private boolean isSimpleComparisionPossible(Part part) {
 		switch (part.shouldIgnoreCase()) {
-			case NEVER:
-				return true;
 			case WHEN_POSSIBLE:
 				return part.getProperty().getType() != String.class;
 			case ALWAYS:
 				return false;
+			case NEVER:
 			default:
 				return true;
 		}
