@@ -24,7 +24,8 @@ import org.springframework.cache.transaction.TransactionAwareCacheDecorator;
 import org.springframework.data.aerospike.BaseBlockingIntegrationTests;
 import org.springframework.data.aerospike.convert.MappingAerospikeConverter;
 
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,26 +44,33 @@ public class AerospikeCacheMangerTests extends BaseBlockingIntegrationTests {
 	public void missingCache() {
 		AerospikeCacheManager manager = new AerospikeCacheManager(client, converter);
 		manager.afterPropertiesSet();
-		Cache cache = manager.getAerospikeCache("missing-cache");
+		Cache cache = manager.getCache("missing-cache");
 
 		assertThat(cache).isNotNull();
 	}
 
 	@Test
 	public void defaultCache() {
-		AerospikeCacheManager manager = new AerospikeCacheManager(client, converter, Arrays.asList("default-cache"));
+		AerospikeCacheManager manager = new AerospikeCacheManager(client, converter, "default-cache");
 		manager.afterPropertiesSet();
-		Cache cache = manager.lookupAerospikeCache("default-cache");
+		Cache cache = manager.getCache("default-cache");
 
 		assertThat(cache).isNotNull().isInstanceOf(AerospikeCache.class);
 	}
 
 	@Test
 	public void defaultCacheWithCustomizedSet() {
-		AerospikeCacheManager manager = new AerospikeCacheManager(client,
-				converter, Arrays.asList("default-cache"), "custom-set", AerospikeCacheManager.DEFAULT_TIME_TO_LIVE);
+		Map<String, AerospikeCacheConfiguration> aerospikeCacheConfigurationMap = new HashMap<>();
+		aerospikeCacheConfigurationMap.put("default-cache", AerospikeCacheConfiguration.builder()
+				.set("custom-set")
+				.build());
+		AerospikeCacheManager manager = AerospikeCacheManager.builder()
+				.aerospikeClient(client)
+				.aerospikeConverter(converter)
+				.initialCacheConfiguration(aerospikeCacheConfigurationMap)
+				.build();
 		manager.afterPropertiesSet();
-		Cache cache = manager.lookupAerospikeCache("default-cache");
+		Cache cache = manager.getCache("default-cache");
 
 		assertThat(cache).isNotNull().isInstanceOf(AerospikeCache.class);
 	}
@@ -72,7 +80,7 @@ public class AerospikeCacheMangerTests extends BaseBlockingIntegrationTests {
 		AerospikeCacheManager manager = new AerospikeCacheManager(client, converter);
 		manager.setTransactionAware(true);
 		manager.afterPropertiesSet();
-		Cache cache = manager.getAerospikeCache("transaction-aware-cache");
+		Cache cache = manager.getCache("transaction-aware-cache");
 
 		assertThat(cache).isNotNull().isInstanceOf(TransactionAwareCacheDecorator.class);
 	}

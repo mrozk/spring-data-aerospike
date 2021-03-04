@@ -44,36 +44,35 @@ public class AerospikeCache implements Cache {
 
 	private static final String VALUE = "value";
 
+	private final String name;
 	private final IAerospikeClient client;
 	private final AerospikeConverter aerospikeConverter;
-	private final String namespace;
-	private final String set;
+	private final AerospikeCacheConfiguration cacheConfiguration;
 	private final WritePolicy createOnly;
 	private final WritePolicy writePolicyForPut;
 
-	public AerospikeCache(IAerospikeClient client,
+	public AerospikeCache(String name,
+						  IAerospikeClient client,
 						  AerospikeConverter aerospikeConverter,
-						  String namespace,
-						  String set,
-						  int expiration) {
+						  AerospikeCacheConfiguration cacheConfiguration) {
+		this.name = name;
 		this.client = client;
 		this.aerospikeConverter = aerospikeConverter;
-		this.namespace = namespace;
-		this.set = set;
+		this.cacheConfiguration = cacheConfiguration;
 		this.createOnly = new WritePolicy(client.getWritePolicyDefault());
 		this.createOnly.recordExistsAction = RecordExistsAction.CREATE_ONLY;
-		this.createOnly.expiration = expiration;
+		this.createOnly.expiration = cacheConfiguration.getExpirationInSeconds();
 		this.writePolicyForPut = new WritePolicy(client.getWritePolicyDefault());
-		this.writePolicyForPut.expiration = expiration;
+		this.writePolicyForPut.expiration = cacheConfiguration.getExpirationInSeconds();
 	}
 
 	private Key getKey(Object key){
-		return new Key(namespace, set, key.toString());
+		return new Key(cacheConfiguration.getNamespace(), cacheConfiguration.getSet(), key.toString());
 	}
 
 	@Override
 	public void clear() {
-		client.truncate(null, namespace, set, null);
+		client.truncate(null, cacheConfiguration.getNamespace(), cacheConfiguration.getSet(), null);
 	}
 
 	@Override
@@ -83,7 +82,7 @@ public class AerospikeCache implements Cache {
 
 	@Override
 	public String getName() {
-		return AerospikeCacheUtils.getFullAerospikeCacheName(namespace, set);
+		return name;
 	}
 
 	@Override
@@ -101,7 +100,7 @@ public class AerospikeCache implements Cache {
 				if (Objects.nonNull(value)) {
 					put(key, value);
 				}
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				log.warn("valueLoader exception", e);
 			}
 		}

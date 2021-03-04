@@ -24,10 +24,14 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.aerospike.cache.AerospikeCacheConfiguration;
 import org.springframework.data.aerospike.cache.AerospikeCacheManager;
 import org.springframework.data.aerospike.cache.AerospikeCacheManagerIntegrationTests.CachingComponent;
 import org.springframework.data.aerospike.convert.MappingAerospikeConverter;
 import org.springframework.data.aerospike.query.QueryEngineTestDataPopulator;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Taras Danylchuk
@@ -43,12 +47,16 @@ public class CommonTestConfig {
     @Bean
     @Primary
     public CacheManager cacheManager(AerospikeClient aerospikeClient, MappingAerospikeConverter aerospikeConverter) {
-        return new AerospikeCacheManager(aerospikeClient, aerospikeConverter);
+        Map<String, AerospikeCacheConfiguration> aerospikeCacheConfigurationMap = new HashMap<>();
+        AerospikeCacheConfiguration defaultCacheConfiguration = AerospikeCacheConfiguration.builder().namespace(namespace).build();
+        aerospikeCacheConfigurationMap.put("DIFFERENT-EXISTING-CACHE", AerospikeCacheConfiguration.builder().namespace(namespace).set("different-set").build());
+        return new AerospikeCacheManager(aerospikeClient, aerospikeConverter, defaultCacheConfiguration, aerospikeCacheConfigurationMap);
     }
 
     @Bean
     public CacheManager cacheManagerWithTTL(AerospikeClient aerospikeClient, MappingAerospikeConverter aerospikeConverter) {
-        return new AerospikeCacheManager(aerospikeClient, aerospikeConverter, 2);
+        AerospikeCacheConfiguration aerospikeCacheConfiguration = AerospikeCacheConfiguration.builder().namespace(namespace).expirationInSeconds(2).build();
+        return AerospikeCacheManager.builder().aerospikeClient(aerospikeClient).aerospikeConverter(aerospikeConverter).defaultCacheConfiguration(aerospikeCacheConfiguration).build();
     }
 
     @Bean

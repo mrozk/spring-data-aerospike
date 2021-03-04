@@ -47,8 +47,8 @@ public class AerospikeCacheManagerIntegrationTests extends BaseBlockingIntegrati
     @AfterEach
     public void tearDown() {
         cachingComponent.reset();
-        client.delete(null, new Key(getNameSpace(), AerospikeCacheManager.DEFAULT_SET_NAME, KEY));
-        client.delete(null, new Key(getNameSpace(), AerospikeCacheManager.DEFAULT_SET_NAME, KEY_THAT_MATCHES_CONDITION));
+        client.delete(null, new Key(getNameSpace(), AerospikeCacheConfiguration.DEFAULT_SET_NAME, KEY));
+        client.delete(null, new Key(getNameSpace(), AerospikeCacheConfiguration.DEFAULT_SET_NAME, KEY_THAT_MATCHES_CONDITION));
     }
 
     @Test
@@ -148,19 +148,19 @@ public class AerospikeCacheManagerIntegrationTests extends BaseBlockingIntegrati
     @Test
     public void shouldClearCache() throws InterruptedException {
         CachedObject response1 = cachingComponent.cacheableMethod(KEY);
-        assertThat(aerospikeOperations.count(CachedObject.class, AerospikeCacheManager.DEFAULT_SET_NAME)).isEqualTo(1);
-        aerospikeCacheManager.getAerospikeCache("TEST").clear();
+        assertThat(aerospikeOperations.count(CachedObject.class, AerospikeCacheConfiguration.DEFAULT_SET_NAME)).isEqualTo(1);
+        aerospikeCacheManager.getCache("TEST").clear();
         Thread.sleep(500);
-        assertThat(aerospikeOperations.count(CachedObject.class, AerospikeCacheManager.DEFAULT_SET_NAME)).isEqualTo(0);
+        assertThat(aerospikeOperations.count(CachedObject.class, AerospikeCacheConfiguration.DEFAULT_SET_NAME)).isEqualTo(0);
     }
 
     @Test
     public void shouldNotClearCacheClearingDifferentCache() throws InterruptedException {
         CachedObject response1 = cachingComponent.cacheableMethod(KEY);
-        assertThat(aerospikeOperations.count(CachedObject.class, AerospikeCacheManager.DEFAULT_SET_NAME)).isEqualTo(1);
-        aerospikeCacheManager.getAerospikeCache("DIFFERENT-CACHE").clear();
+        assertThat(aerospikeOperations.count(CachedObject.class, AerospikeCacheConfiguration.DEFAULT_SET_NAME)).isEqualTo(1);
+        aerospikeCacheManager.getCache("DIFFERENT-EXISTING-CACHE").clear();
         Thread.sleep(500);
-        assertThat(aerospikeOperations.count(CachedObject.class, AerospikeCacheManager.DEFAULT_SET_NAME)).isEqualTo(1);
+        assertThat(aerospikeOperations.count(CachedObject.class, AerospikeCacheConfiguration.DEFAULT_SET_NAME)).isEqualTo(1);
     }
 
     public static class CachingComponent {
