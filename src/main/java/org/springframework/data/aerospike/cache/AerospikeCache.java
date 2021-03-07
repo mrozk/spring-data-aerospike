@@ -21,8 +21,6 @@ import com.aerospike.client.Key;
 import com.aerospike.client.Record;
 import com.aerospike.client.policy.RecordExistsAction;
 import com.aerospike.client.policy.WritePolicy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.cache.Cache;
 import org.springframework.cache.support.SimpleValueWrapper;
 import org.springframework.data.aerospike.convert.AerospikeConverter;
@@ -39,8 +37,6 @@ import java.util.concurrent.Callable;
  * @author Venil Noronha
  */
 public class AerospikeCache implements Cache {
-
-	private final Logger log = LoggerFactory.getLogger(AerospikeCache.class);
 
 	private static final String VALUE = "value";
 
@@ -101,7 +97,7 @@ public class AerospikeCache implements Cache {
 					put(key, value);
 				}
 			} catch (Throwable e) {
-				log.warn("valueLoader exception", e);
+				throw new Cache.ValueRetrievalException(key, valueLoader, e);
 			}
 		}
 		return value;
