@@ -125,10 +125,23 @@ public class AerospikeCache implements Cache {
 		serializeAndPut(writePolicyForPut, key, value);
 	}
 
+	/**
+	 * Write the key-value to Aerospike database if the key doesn't already exists.
+	 *
+	 * @param key given Key.
+	 * @param value given Value to write (in case the key doesn't exist).
+	 * @return In case the key already exists return the existing value, else return null.
+	 */
 	@Override
 	public ValueWrapper putIfAbsent(Object key, Object value) {
+		ValueWrapper valueWrapper = get(key);
+		// Key already exists, return the existing value
+		if (valueWrapper != null) {
+			return valueWrapper;
+		}
+		// Key doesn't exists, write the new given key-value to Aerospike database and return null
 		serializeAndPut(createOnly, key, value);
-		return get(key);
+		return null;
 	}
 
 	private void serializeAndPut(WritePolicy writePolicy, Object key, Object value) {
