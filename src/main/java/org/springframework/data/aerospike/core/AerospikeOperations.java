@@ -125,9 +125,8 @@ public interface AerospikeOperations {
 
 	/**
 	 * Execute operation against underlying store.
-	 * 
 	 * @param supplier must not be {@literal null}.
-	 * @return
+	 * @return Execution result.
 	 */
 	<T> T execute(Supplier<T> supplier);
 

@@ -15,24 +15,12 @@
  */
 package org.springframework.data.aerospike.core;
 
-import com.aerospike.client.AerospikeClient;
-import com.aerospike.client.AerospikeException;
-import com.aerospike.client.Bin;
-import com.aerospike.client.Info;
-import com.aerospike.client.Key;
-import com.aerospike.client.Operation;
 import com.aerospike.client.Record;
-import com.aerospike.client.ResultCode;
-import com.aerospike.client.Value;
+import com.aerospike.client.*;
 import com.aerospike.client.cluster.Node;
 import com.aerospike.client.policy.RecordExistsAction;
 import com.aerospike.client.policy.WritePolicy;
-import com.aerospike.client.query.Filter;
-import com.aerospike.client.query.IndexCollectionType;
-import com.aerospike.client.query.IndexType;
-import com.aerospike.client.query.KeyRecord;
-import com.aerospike.client.query.ResultSet;
-import com.aerospike.client.query.Statement;
+import com.aerospike.client.query.*;
 import com.aerospike.client.task.IndexTask;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
@@ -51,14 +39,7 @@ import org.springframework.data.keyvalue.core.IterableConverter;
 import org.springframework.data.util.StreamUtils;
 import org.springframework.util.Assert;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -197,7 +178,7 @@ public class AerospikeTemplate extends BaseAerospikeTemplate implements Aerospik
 		AerospikeWriteData data = writeData(document);
 		WritePolicy policy = ignoreGenerationSavePolicy(data, RecordExistsAction.CREATE_ONLY);
 		AerospikePersistentEntity<?> entity = mappingContext.getRequiredPersistentEntity(document.getClass());
-		if(entity.hasVersionProperty()) {
+		if (entity.hasVersionProperty()) {
 			// we are ignoring generation here as insert operation should fail with DuplicateKeyException if key already exists
 			// and we do not mind which initial version is set in the document, BUT we need to update the version value in the original document
 			// also we do not want to handle aerospike error codes as cas aware error codes as we are ignoring generation
@@ -213,7 +194,7 @@ public class AerospikeTemplate extends BaseAerospikeTemplate implements Aerospik
 
 		AerospikeWriteData data = writeData(document);
 		AerospikePersistentEntity<?> entity = mappingContext.getRequiredPersistentEntity(document.getClass());
-		if(entity.hasVersionProperty()) {
+		if (entity.hasVersionProperty()) {
 			WritePolicy policy = expectGenerationSavePolicy(data, RecordExistsAction.REPLACE_ONLY);
 
 			doPersistWithVersionAndHandleCasError(document, data, policy);
@@ -366,7 +347,7 @@ public class AerospikeTemplate extends BaseAerospikeTemplate implements Aerospik
 			statement.setFilter(filter);
 		statement.setSetName(entity.getSetName());
 		statement.setNamespace(this.namespace);
-		ResultSet resultSet = null;
+		ResultSet resultSet;
 		if (arguments != null && arguments.size() > 0)
 			resultSet = this.client.queryAggregate(null, statement, module,
 					function, arguments.toArray(new Value[0]));

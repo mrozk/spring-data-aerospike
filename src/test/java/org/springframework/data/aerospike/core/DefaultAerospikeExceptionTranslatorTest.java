@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class DefaultAerospikeExceptionTranslatorTest {
 
-    private DefaultAerospikeExceptionTranslator translator = new DefaultAerospikeExceptionTranslator();
+    private final DefaultAerospikeExceptionTranslator translator = new DefaultAerospikeExceptionTranslator();
 
     @Test
     public void shouldTranslateKeyExistError() {

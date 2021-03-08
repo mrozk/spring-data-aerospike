@@ -48,8 +48,7 @@ public class AerospikeKeyValueAdapter extends AbstractKeyValueAdapter {
 
 	private final AerospikeConverter converter;
 	private final AerospikeClient client;
-
-	private String namespace;
+	private final String namespace;
 	private final WritePolicy insertPolicy;
 	private final WritePolicy updatePolicy;
 
@@ -61,7 +60,6 @@ public class AerospikeKeyValueAdapter extends AbstractKeyValueAdapter {
 	 * @param converter must not be {@literal null}.
 	 */
 	public AerospikeKeyValueAdapter(AerospikeClient client, AerospikeConverter converter, String namespace) {
-
 		this.client = client;
 		this.converter = converter;
 		this.namespace = namespace;
@@ -70,7 +68,6 @@ public class AerospikeKeyValueAdapter extends AbstractKeyValueAdapter {
 		this.insertPolicy.recordExistsAction = RecordExistsAction.CREATE_ONLY;
 		this.updatePolicy.recordExistsAction = RecordExistsAction.UPDATE_ONLY;
 	}
-
 	
 	/* 
 	 * (non-Javadoc)
@@ -79,11 +76,8 @@ public class AerospikeKeyValueAdapter extends AbstractKeyValueAdapter {
 	@Override
 	public Object put(Object id, Object item, String keyspace) {
 		AerospikeWriteData data = AerospikeWriteData.forWrite();
-
 		converter.write(item, data);
-
 		client.put(null, data.getKey(), data.getBinsAsArray());
-
 		return item;
 	}
 
@@ -93,7 +87,6 @@ public class AerospikeKeyValueAdapter extends AbstractKeyValueAdapter {
 	 */
 	@Override
 	public boolean contains(Object id, String keyspace) {
-
 		return client.exists(null, makeKey(keyspace, id.toString()));
 	}
 
@@ -103,7 +96,6 @@ public class AerospikeKeyValueAdapter extends AbstractKeyValueAdapter {
 	 */
 	@Override
 	public Object get(Object id, String keyspace) {
-
 		Key key = makeKey(keyspace, id.toString());
 		Record record = client.get(null, key);
 		if(record == null){
@@ -119,17 +111,13 @@ public class AerospikeKeyValueAdapter extends AbstractKeyValueAdapter {
 	 */
 	@Override
 	public Object delete(Object id, String keyspace) {
-
 		Key key = new Key(namespace, keyspace, id.toString());
-
 		Object object = get(id, keyspace);
-
 		if (object != null) {
 			WritePolicy wp = new WritePolicy();
 			wp.recordExistsAction = RecordExistsAction.UPDATE_ONLY;
 			client.delete(wp, key);
 		}
-
 		return object;
 	}
 
@@ -139,32 +127,31 @@ public class AerospikeKeyValueAdapter extends AbstractKeyValueAdapter {
 	 */
 	@Override
 	public Collection<?> getAllOf(String keyspace) {
-		
 		Statement statement = new Statement();
 		statement.setNamespace(namespace);
 		statement.setSetName(keyspace);
 
-		
-		List<Object> result = new ArrayList<Object>();
+		List<Object> result = new ArrayList<>();
 		RecordSet recordSet = client.query(null, statement);
-		
-		while (recordSet.next()) {
 
-			//AerospikeData data = AerospikeData.forRead(recordSet.getKey(), recordSet.getRecord());
-			//result.add(converter.read(Object.class, data));
+		/*
+		while (recordSet.next()) {
+			AerospikeData data = AerospikeData.forRead(recordSet.getKey(), recordSet.getRecord());
+			result.add(converter.read(Object.class, data));
 		}
 
-//		final List<Object> result = new ArrayList<Object>();
-//		String set = keyspace.toString();
-//		client.scanAll(null, namespace, set, new ScanCallback() {
-//			
-//			@Override
-//			public void scanCallback(Key key, Record record) throws AerospikeException {
-//				AerospikeData data = AerospikeData.forRead(key, record);
-//				Object converted = converter.read(Object.class, data);
-//				result.add(converted);
-//			}
-//		});
+		final List<Object> result = new ArrayList<Object>();
+		String set = keyspace.toString();
+		client.scanAll(null, namespace, set, new ScanCallback() {
+
+			@Override
+			public void scanCallback(Key key, Record record) throws AerospikeException {
+				AerospikeData data = AerospikeData.forRead(key, record);
+				Object converted = converter.read(Object.class, data);
+				result.add(converted);
+			}
+		});
+		 */
 		return result;
 	}
 
@@ -192,10 +179,6 @@ public class AerospikeKeyValueAdapter extends AbstractKeyValueAdapter {
 	@Override
 	public void destroy() throws Exception {}
 	
-	private Key makeKey(String set, Object keyValue){
-		return new Key(this.namespace, set, Value.get(keyValue));
-	}
-	
 	@Override
 	public Collection<?> find(KeyValueQuery<?> query, String keyspace) {
 		// TODO Auto-generated method stub
@@ -214,6 +197,8 @@ public class AerospikeKeyValueAdapter extends AbstractKeyValueAdapter {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-	
 
+	private Key makeKey(String set, Object keyValue){
+		return new Key(this.namespace, set, Value.get(keyValue));
+	}
 }
