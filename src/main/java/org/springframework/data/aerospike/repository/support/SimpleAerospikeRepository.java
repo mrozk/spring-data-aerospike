@@ -89,7 +89,7 @@ public class SimpleAerospikeRepository<T, ID> implements AerospikeRepository<T, 
 		String setName = operations.getSetName(type);
 
 		Stream<T> content = operations.findInRange(pageable.getOffset(), pageable.getPageSize(), pageable.getSort(), type);
-		long totalCount = operations.count(type, setName);
+		long totalCount = operations.count(setName);
 
 		return new PageImpl<T>(content.collect(Collectors.toList()), pageable, totalCount);
 	}

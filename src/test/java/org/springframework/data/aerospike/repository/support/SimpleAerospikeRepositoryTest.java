@@ -122,7 +122,7 @@ public class SimpleAerospikeRepositoryTest {
 
 		doReturn(testPersons.stream()).when(operations).findInRange(0, 2, Sort.unsorted(), Person.class);
 		doReturn("set").when(operations).getSetName(Person.class);
-		doReturn(5L).when(operations).count(Person.class, "set");
+		doReturn(5L).when(operations).count("set");
 
 		Page<Person> result = aerospikeRepository.findAll(PageRequest.of(0, 2));
 

@@ -429,7 +429,7 @@ public class AerospikeTemplate extends BaseAerospikeTemplate implements Aerospik
 		Assert.notNull(entityClass, "Type for count must not be null!");
 
 		String setName = getSetName(entityClass);
-		return count(entityClass, setName);
+		return count(setName);
 	}
 
 	@Override
@@ -438,8 +438,7 @@ public class AerospikeTemplate extends BaseAerospikeTemplate implements Aerospik
 	}
 
 	@Override
-	public <T> long count(Class<T> entityClass, String setName) {
-		Assert.notNull(entityClass, "Type for count must not be null!");
+	public <T> long count(String setName) {
 		Assert.notNull(setName, "Set for count must not be null!");
 
 		try {
@@ -620,11 +619,10 @@ public class AerospikeTemplate extends BaseAerospikeTemplate implements Aerospik
 			Comparator<T> comparator = getComparator(query);
 			results = results.sorted(comparator);
 		}
-
-		if(query.hasOffset()) {
+		if (query.hasOffset()) {
 			results = results.skip(query.getOffset());
 		}
-		if(query.hasRows()) {
+		if (query.hasRows()) {
 			results = results.limit(query.getRows());
 		}
 		return results;
