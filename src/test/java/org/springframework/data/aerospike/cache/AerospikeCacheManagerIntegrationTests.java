@@ -150,7 +150,7 @@ public class AerospikeCacheManagerIntegrationTests extends BaseBlockingIntegrati
         CachedObject response1 = cachingComponent.cacheableMethod(KEY);
         assertThat(aerospikeOperations.count(CachedObject.class, AerospikeCacheConfiguration.DEFAULT_SET_NAME)).isEqualTo(1);
         aerospikeCacheManager.getCache("TEST").clear();
-        Thread.sleep(500);
+        Thread.sleep(1500);
         assertThat(aerospikeOperations.count(CachedObject.class, AerospikeCacheConfiguration.DEFAULT_SET_NAME)).isEqualTo(0);
     }
 
