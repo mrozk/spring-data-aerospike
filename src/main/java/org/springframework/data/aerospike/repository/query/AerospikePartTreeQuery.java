@@ -27,7 +27,6 @@ import java.util.stream.Stream;
 
 /**
  *
- *
  * @author Peter Milne
  * @author Jean Mercier
  *

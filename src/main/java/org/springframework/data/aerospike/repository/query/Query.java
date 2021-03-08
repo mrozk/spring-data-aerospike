@@ -1,5 +1,17 @@
-/**
- * 
+/*
+ * Copyright 2015-2019 the original author or authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.springframework.data.aerospike.repository.query;
 
@@ -9,10 +21,8 @@ import org.springframework.data.keyvalue.core.query.KeyValueQuery;
 
 /**
  *
- *
  * @author Peter Milne
  * @author Jean Mercier
- * @param <T>
  *
  */
 public class Query {
@@ -44,8 +54,6 @@ public class Query {
 
 	/**
 	 * Get the criteria object.
-	 *
-	 * @return
 	 */
 	public CriteriaDefinition getCriteria() {
 		return criteria;
@@ -53,8 +61,6 @@ public class Query {
 
 	/**
 	 * Get {@link Sort}.
-	 *
-	 * @return
 	 */
 	public Sort getSort() {
 		return sort;
@@ -97,8 +103,6 @@ public class Query {
 
 	/**
 	 * Set the number of elements to read.
-	 *
-	 * @param offset use negative value for all.
 	 */
 	public void setRows(int rows) {
 		this.rows = rows;
@@ -106,8 +110,6 @@ public class Query {
 
 	/**
 	 * Set {@link Sort} to be applied.
-	 *
-	 * @param sort
 	 */
 	public void setSort(Sort sort) {
 		this.sort = sort;
@@ -117,7 +119,6 @@ public class Query {
 	 * Add given {@link Sort}.
 	 *
 	 * @param sort {@literal null} {@link Sort} will be ignored.
-	 * @return
 	 */
 	public Query orderBy(Sort sort) {
 		if (sort == null) {
@@ -126,8 +127,7 @@ public class Query {
 
 		if (this.sort != null) {
 			this.sort.and(sort);
-		}
-		else {
+		} else {
 			this.sort = sort;
 		}
 		return this;
@@ -135,8 +135,6 @@ public class Query {
 
 	/**
 	 * @see Query#setOffset(long)
-	 * @param offset
-	 * @return
 	 */
 	public Query skip(long offset) {
 		setOffset(offset);
@@ -145,18 +143,12 @@ public class Query {
 
 	/**
 	 * @see Query#setRows(int)
-	 * @param rows
-	 * @return
 	 */
 	public Query limit(int rows) {
 		setRows(rows);
 		return this;
 	}
 
-	/**
-	 * @param sort
-	 * @return
-	 */
 	public Query with(Sort sort) {
 		if (sort == null) {
 			return this;
@@ -173,26 +165,11 @@ public class Query {
 
 		if (this.sort == null) {
 			this.sort = sort;
-		}
-		else {
+		} else {
 			this.sort = this.sort.and(sort);
 		}
 
 		return this;
 	}
-
-
-//	/* (non-Javadoc)
-//	 * @see java.lang.Object#toString()
-//	 */
-//	@Override
-//	public String toString() {
-//		StringBuilder res = new StringBuilder();
-//		for (Qualifier qualifier : getQueryObject()) {
-//			res.append(qualifier.luaFilterString());
-//			res.append(',');
-//		}
-//		return res.toString();
-//	}
 
 }

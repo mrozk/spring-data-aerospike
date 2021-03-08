@@ -28,9 +28,10 @@ public class ReactiveAerospikePartTreeQuery extends BaseAerospikePartTreeQuery {
 
 	private final ReactiveAerospikeOperations aerospikeOperations;
 
-
-	public ReactiveAerospikePartTreeQuery(QueryMethod queryMethod, QueryMethodEvaluationContextProvider evalContextProvider,
-										  ReactiveAerospikeOperations aerospikeOperations, Class<? extends AbstractQueryCreator<?, ?>> queryCreator) {
+	public ReactiveAerospikePartTreeQuery(QueryMethod queryMethod,
+										  QueryMethodEvaluationContextProvider evalContextProvider,
+										  ReactiveAerospikeOperations aerospikeOperations,
+										  Class<? extends AbstractQueryCreator<?, ?>> queryCreator) {
 		super(queryMethod, evalContextProvider, queryCreator);
 		this.aerospikeOperations = aerospikeOperations;
 	}
@@ -38,7 +39,6 @@ public class ReactiveAerospikePartTreeQuery extends BaseAerospikePartTreeQuery {
 	/* (non-Javadoc)
 	 * @see org.springframework.data.repository.query.RepositoryQuery#execute(java.lang.Object[])
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public Object execute(Object[] parameters) {
 		ParametersParameterAccessor accessor = new ParametersParameterAccessor(queryMethod.getParameters(), parameters);
