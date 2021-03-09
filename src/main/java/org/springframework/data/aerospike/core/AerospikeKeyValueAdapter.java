@@ -21,8 +21,6 @@ import com.aerospike.client.Record;
 import com.aerospike.client.Value;
 import com.aerospike.client.policy.RecordExistsAction;
 import com.aerospike.client.policy.WritePolicy;
-import com.aerospike.client.query.RecordSet;
-import com.aerospike.client.query.Statement;
 import org.springframework.data.aerospike.convert.AerospikeConverter;
 import org.springframework.data.aerospike.convert.AerospikeReadData;
 import org.springframework.data.aerospike.convert.AerospikeWriteData;
@@ -33,9 +31,7 @@ import org.springframework.data.keyvalue.core.KeyValueTemplate;
 import org.springframework.data.keyvalue.core.query.KeyValueQuery;
 import org.springframework.data.util.CloseableIterator;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map.Entry;
 
 /**
@@ -127,32 +123,7 @@ public class AerospikeKeyValueAdapter extends AbstractKeyValueAdapter {
 	 */
 	@Override
 	public Collection<?> getAllOf(String keyspace) {
-		Statement statement = new Statement();
-		statement.setNamespace(namespace);
-		statement.setSetName(keyspace);
-
-		List<Object> result = new ArrayList<>();
-		RecordSet recordSet = client.query(null, statement);
-
-		/*
-		while (recordSet.next()) {
-			AerospikeData data = AerospikeData.forRead(recordSet.getKey(), recordSet.getRecord());
-			result.add(converter.read(Object.class, data));
-		}
-
-		final List<Object> result = new ArrayList<Object>();
-		String set = keyspace.toString();
-		client.scanAll(null, namespace, set, new ScanCallback() {
-
-			@Override
-			public void scanCallback(Key key, Record record) throws AerospikeException {
-				AerospikeData data = AerospikeData.forRead(key, record);
-				Object converted = converter.read(Object.class, data);
-				result.add(converted);
-			}
-		});
-		 */
-		return result;
+		return null;
 	}
 
 	/* 
