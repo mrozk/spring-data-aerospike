@@ -98,12 +98,12 @@ public abstract class AerospikeDataConfigurationSupport {
     @Bean(name = "aerospikeClient", destroyMethod = "close")
     public AerospikeClient aerospikeClient() {
         Collection<Host> hosts = getHosts();
-        return new AerospikeClient(getClientPolicy(), hosts.toArray(new Host[hosts.size()]));
+        return new AerospikeClient(getClientPolicy(), hosts.toArray(new Host[0]));
     }
 
     protected Set<Class<?>> getInitialEntitySet() throws ClassNotFoundException {
         String basePackage = getMappingBasePackage();
-        Set<Class<?>> initialEntitySet = new HashSet<Class<?>>();
+        Set<Class<?>> initialEntitySet = new HashSet<>();
 
         if (StringUtils.hasText(basePackage)) {
             ClassPathScanningCandidateComponentProvider componentProvider = new ClassPathScanningCandidateComponentProvider(false);
