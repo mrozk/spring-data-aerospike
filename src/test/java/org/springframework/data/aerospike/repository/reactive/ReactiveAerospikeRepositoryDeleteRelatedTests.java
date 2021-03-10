@@ -36,7 +36,6 @@ public class ReactiveAerospikeRepositoryDeleteRelatedTests extends BaseReactiveI
         StepVerifier.create(customerRepo.findById(customer2.getId())).expectNext(customer2).verifyComplete();
     }
 
-
     @Test
     public void deleteById_ShouldDeleteExistent() {
         StepVerifier.create(customerRepo.deleteById(customer2.getId()).subscribeOn(Schedulers.parallel())).verifyComplete();
@@ -50,6 +49,7 @@ public class ReactiveAerospikeRepositoryDeleteRelatedTests extends BaseReactiveI
     }
 
     @Test
+    @SuppressWarnings("ConstantConditions")
     public void deleteById_ShouldRejectsNullObject() {
         assertThatThrownBy(() -> customerRepo.deleteById((String) null).block())
                 .isInstanceOf(IllegalArgumentException.class);
@@ -73,6 +73,7 @@ public class ReactiveAerospikeRepositoryDeleteRelatedTests extends BaseReactiveI
     }
 
     @Test
+    @SuppressWarnings("ConstantConditions")
     public void deleteByIdPublisher_ShouldRejectsNullObject() {
         assertThatThrownBy(() -> customerRepo.deleteById((Publisher) null).block())
                 .isInstanceOf(IllegalArgumentException.class);
@@ -94,6 +95,7 @@ public class ReactiveAerospikeRepositoryDeleteRelatedTests extends BaseReactiveI
     }
 
     @Test
+    @SuppressWarnings("ConstantConditions")
     public void delete_ShouldRejectsNullObject() {
         assertThatThrownBy(() -> customerRepo.delete(null).block())
                 .isInstanceOf(IllegalArgumentException.class);
@@ -126,7 +128,6 @@ public class ReactiveAerospikeRepositoryDeleteRelatedTests extends BaseReactiveI
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-
     @Test
     public void deleteAllPublisher_ShouldDeleteExistent() {
         customerRepo.deleteAll(Flux.just(customer1, customer2)).subscribeOn(Schedulers.parallel()).block();
@@ -144,5 +145,4 @@ public class ReactiveAerospikeRepositoryDeleteRelatedTests extends BaseReactiveI
         StepVerifier.create(customerRepo.findById(customer1.getId())).expectNextCount(0).verifyComplete();
         StepVerifier.create(customerRepo.findById(customer2.getId())).expectNextCount(0).verifyComplete();
     }
-
 }

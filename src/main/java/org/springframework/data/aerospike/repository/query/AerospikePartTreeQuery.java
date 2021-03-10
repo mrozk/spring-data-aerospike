@@ -26,17 +26,17 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- *
  * @author Peter Milne
  * @author Jean Mercier
- *
  */
 public class AerospikePartTreeQuery extends BaseAerospikePartTreeQuery {
 	
 	private final AerospikeOperations aerospikeOperations;
 
-	public AerospikePartTreeQuery(QueryMethod queryMethod, QueryMethodEvaluationContextProvider evalContextProvider,
-								  AerospikeOperations aerospikeOperations, Class<? extends AbstractQueryCreator<?, ?>> queryCreator) {
+	public AerospikePartTreeQuery(QueryMethod queryMethod,
+								  QueryMethodEvaluationContextProvider evalContextProvider,
+								  AerospikeOperations aerospikeOperations,
+								  Class<? extends AbstractQueryCreator<?, ?>> queryCreator) {
 		super(queryMethod, evalContextProvider, queryCreator);
 		this.aerospikeOperations = aerospikeOperations;
 	}
@@ -51,10 +51,8 @@ public class AerospikePartTreeQuery extends BaseAerospikePartTreeQuery {
 		Query query = prepareQuery(parameters, accessor);
 
 		if (queryMethod.isPageQuery() || queryMethod.isSliceQuery()) {
-
 			Stream<?> result = findByQuery(query);
 			long total = queryMethod.isSliceQuery() ? 0 : aerospikeOperations.count(query, queryMethod.getEntityInformation().getJavaType());
-
 			//TODO: should return SliceImpl for slice query
 			return new PageImpl(result.collect(Collectors.toList()), accessor.getPageable(), total);
 		} else if (queryMethod.isStreamQuery()) {
@@ -65,7 +63,6 @@ public class AerospikePartTreeQuery extends BaseAerospikePartTreeQuery {
 			Stream<?> result = findByQuery(query);
 			return result.findFirst().orElse(null);
 		}
-
 		throw new UnsupportedOperationException("Query method " + queryMethod.getNamedQueryName() + " not supported.");
 	}
 

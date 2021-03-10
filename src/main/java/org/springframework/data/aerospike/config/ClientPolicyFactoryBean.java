@@ -43,7 +43,7 @@ public class ClientPolicyFactoryBean implements FactoryBean<ClientPolicy> {
 	/**
 	 * Configures the maximum number of connections for operation processing.
 	 * This value is used to size the synchronous connection pool for each server node.
-	 * @param maxConnsPerNode
+	 * @param maxConnsPerNode The maxConnsPerNode configuration value.
 	 */
 	public void setMaxConnsPerNode(int maxConnsPerNode) {
 		this.policy.maxConnsPerNode = maxConnsPerNode;
@@ -52,7 +52,7 @@ public class ClientPolicyFactoryBean implements FactoryBean<ClientPolicy> {
 	/**
 	 * Configures the timeout for a client connection when opening a connection 
 	 * to the server host for the first time.
-	 * @param timeout
+	 * @param timeout The timeout configuration value.
 	 */
 	public void setTimeout(int timeout){
 		this.policy.timeout = timeout;
@@ -62,7 +62,7 @@ public class ClientPolicyFactoryBean implements FactoryBean<ClientPolicy> {
 	 * Configures the maximum socket idle time for the client.
 	 * Socket connection pools will discard sockets
 	 * that have been idle longer than the maximum
-	 * @param maxSocketIdle
+	 * @param maxSocketIdle The maxSocketIdle configuration value.
 	 */
 	public void setMaxSocketIdle(int maxSocketIdle){
 		this.policy.maxSocketIdle = maxSocketIdle;
@@ -71,7 +71,7 @@ public class ClientPolicyFactoryBean implements FactoryBean<ClientPolicy> {
 	/**
 	 * Configures the action if the client cannot connect to a host.
 	 * If true the client will throw exception if host connection fails during connection.
-	 * @param failIfNotConnected
+	 * @param failIfNotConnected The failIfNotConnected configuration value.
 	 */
 	public void failIfNotConnected(boolean failIfNotConnected){
 		this.policy.failIfNotConnected = failIfNotConnected;
@@ -79,7 +79,7 @@ public class ClientPolicyFactoryBean implements FactoryBean<ClientPolicy> {
 	
 	/**
 	 * Configures the tend interval, in milliseconds, between cluster tends, by maintenance thread.
-	 * @param tendInterval
+	 * @param tendInterval The tendInterval configuration value.
 	 */
 	public void setTendInterval(int tendInterval){
 		this.policy.tendInterval = tendInterval;
@@ -87,7 +87,7 @@ public class ClientPolicyFactoryBean implements FactoryBean<ClientPolicy> {
 	
 	/**
 	 * Configures the default read policy
-	 * @param readPolicy
+	 * @param readPolicy The readPolicy configuration value.
 	 */
 	public void setReadPolicyDefault(Policy readPolicy){
 		this.policy.readPolicyDefault = readPolicy;
@@ -95,7 +95,7 @@ public class ClientPolicyFactoryBean implements FactoryBean<ClientPolicy> {
 
 	/**
 	 * Configures the default write policy
-	 * @param writePolicy
+	 * @param writePolicy The writePolicy configuration value.
 	 */
 	public void setWritePolicyDefault(WritePolicy writePolicy){
 		this.policy.writePolicyDefault = writePolicy;
@@ -103,7 +103,7 @@ public class ClientPolicyFactoryBean implements FactoryBean<ClientPolicy> {
 	
 	/**
 	 * Configures the default scan policy
-	 * @param scanPolicy
+	 * @param scanPolicy The scanPolicy configuration value.
 	 */
 	public void setScanPolicyDefault(ScanPolicy scanPolicy){
 		this.policy.scanPolicyDefault = scanPolicy;
@@ -111,10 +111,36 @@ public class ClientPolicyFactoryBean implements FactoryBean<ClientPolicy> {
 
 	/**
 	 * Configures the default batch policy
-	 * @param batchPolicy
+	 * @param batchPolicy The batchPolicy configuration value.
 	 */
 	public void setBatchPolicyDefault(BatchPolicy batchPolicy){
 		this.policy.batchPolicyDefault = batchPolicy;
+	}
+
+	/**
+	 * Configures the default query policy
+	 * @param queryPolicy The queryPolicy configuration value.
+	 */
+	public void setQueryPolicyDefault(QueryPolicy queryPolicy){
+		this.policy.queryPolicyDefault = queryPolicy;
+	}
+
+	/**
+	 * Configures the User name for authentication to cluster.
+	 * Only used for clusters running with security enabled.
+	 * @param user The user configuration value.
+	 */
+	public void setUser(String user){
+		this.policy.user = user;
+	}
+
+	/**
+	 * Configures the User password for authentication to cluster.
+	 * Only used for clusters running with security enabled.
+	 * @param password The password configuration value.
+	 */
+	public void setPassword(String password){
+		this.policy.password = password;
 	}
 
 	/* 
@@ -133,32 +159,6 @@ public class ClientPolicyFactoryBean implements FactoryBean<ClientPolicy> {
 	@Override
 	public boolean isSingleton() {
 		return false;
-	}
-
-	/**
-	 * Configures the default query policy
-	 * @param queryPolicy
-	 */
-	public void setQueryPolicyDefault(QueryPolicy queryPolicy){
-		this.policy.queryPolicyDefault = queryPolicy;
-	}
-
-	/**
-	 * Configures the User name for authentication to cluster.  
-	 * Only used for clusters running with security enabled.
-	 * @param user
-	 */
-	public void setUser(String user){
-		this.policy.user = user;
-	}
-
-	/**
-	 * Configures the User password for authentication to cluster.  
-	 * Only used for clusters running with security enabled.
-	 * @param password
-	 */
-	public void setPassword(String password){
-		this.policy.password = password;
 	}
 
 	/* 

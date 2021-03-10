@@ -20,10 +20,8 @@ import com.aerospike.client.Value;
 import org.springframework.data.aerospike.query.Qualifier;
 
 /**
- *
  * @author Michael Zhang
  * @author Jeff Boone
- * 
  */
 public class AerospikeCriteria extends Qualifier implements CriteriaDefinition {
 	
@@ -64,5 +62,4 @@ public class AerospikeCriteria extends Qualifier implements CriteriaDefinition {
 	public String getKey() {
 		return this.getField();
 	}
-
 }

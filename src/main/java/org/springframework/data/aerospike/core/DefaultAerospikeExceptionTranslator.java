@@ -41,14 +41,13 @@ public class DefaultAerospikeExceptionTranslator implements AerospikeExceptionTr
 	 */
 	@Override
 	public DataAccessException translateExceptionIfPossible(RuntimeException cause) {
-
 		if (cause instanceof AerospikeException){
 			int resultCode = ((AerospikeException)cause).getResultCode();
 			String msg = cause.getMessage();
 			if (cause instanceof AerospikeException.Connection) {
 				if (resultCode == ResultCode.SERVER_NOT_AVAILABLE) {
 					// we should throw query timeout exception only when opening new connection fails with SocketTimeoutException.
-					// see com.aerospike.client.cluster.Connection for more details
+					// see com.aerospike.client.cluster.Connection for more details.
 					return new QueryTimeoutException(msg, cause);
 				}
 			}
@@ -73,13 +72,11 @@ public class DefaultAerospikeExceptionTranslator implements AerospikeExceptionTr
 				case ResultCode.NO_MORE_CONNECTIONS:
 				case ResultCode.KEY_BUSY:
 					return new TransientDataAccessResourceException(msg, cause);
-
 				default:
 					return new RecoverableDataAccessException(msg, cause);
-
 			}
 		}
-		//we should not convert exceptions that spring-data-aeropike does not recognise
+		// we should not convert exceptions that spring-data-aerospike does not recognise.
 		return null;
 	}
 }

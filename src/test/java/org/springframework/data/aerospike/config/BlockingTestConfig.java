@@ -20,14 +20,11 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- *
- *
  * @author Peter Milne
  * @author Jean Mercier
- *
  */
 @EnableAerospikeRepositories(basePackageClasses = {ContactRepository.class, CustomerRepository.class})
-public class BlockingTestConfig extends AbstractAerospikeDataConfiguration  {
+public class BlockingTestConfig extends AbstractAerospikeDataConfiguration {
 
 	@Value("${embedded.aerospike.namespace}")
 	protected String namespace;
@@ -61,7 +58,7 @@ public class BlockingTestConfig extends AbstractAerospikeDataConfiguration  {
 
 	@Bean
 	public AdditionalAerospikeTestOperations aerospikeOperations(AerospikeTemplate template, AerospikeClient client,
-																 GenericContainer aerospike) {
+																 GenericContainer<?> aerospike) {
 		return new BlockingAerospikeTestOperations(new IndexInfoParser(), template, client, aerospike);
 	}
 }

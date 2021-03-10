@@ -38,7 +38,6 @@ public class AerospikeClientBeanDefinitionParser implements BeanDefinitionParser
 	 */
 	@Override
 	public BeanDefinition parse(Element element, ParserContext parserContext) {
-
 		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(AerospikeClient.class);
 		builder.addConstructorArgValue(element.getAttribute("host"));
 		builder.addConstructorArgValue(element.getAttribute("port"));
@@ -53,18 +52,16 @@ public class AerospikeClientBeanDefinitionParser implements BeanDefinitionParser
 	}
 
 	/**
-	 * Looks up a nested {@code client-policy} element within the given one and pases a {@link BeanDefinition} from it.
+	 * Looks up a nested {@code client-policy} element within the given one and passes a {@link BeanDefinition} from it.
 	 * 
 	 * @param element the current {@code client} element, must not be {@literal null}.
 	 * @param parserContext must not be {@literal null}.
 	 * @param builder must not be {@literal null}.
 	 */
 	private void parseNestedClientPolicy(Element element, ParserContext parserContext, BeanDefinitionBuilder builder) {
-
 		Element clientPolicyElement = DomUtils.getChildElementByTagName(element, "client-policy");
 
 		if (clientPolicyElement != null) {
-
 			BeanDefinition policyDefinition = clientPolicyParser.parse(clientPolicyElement, parserContext);
 			builder.addConstructorArgValue(policyDefinition);
 		}

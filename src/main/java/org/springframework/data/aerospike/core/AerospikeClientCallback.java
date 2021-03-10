@@ -27,13 +27,22 @@ import com.aerospike.client.AerospikeException;
 public interface AerospikeClientCallback<T> {
 
 	/**
-	 * Interact with the native {@link AerospikeClient} and produce a result from it.
-	 * 
+	 * Interact with the native {@link AerospikeClient} and produce a records from it.
+	 *
 	 * @param client will never be {@literal null}.
-	 * @return
-	 * @throws AerospikeException
+	 * @return Record iterator
+	 * @throws AerospikeException in case of encountering an error while interacting
+	 * 		with AerospikeClient an AerospikeException will be thrown.
 	 */
 	T recordIterator(AerospikeClient client) throws AerospikeException;
-	
+
+	/**
+	 * Interact with the native {@link AerospikeClient} and produce a result from it.
+	 *
+	 * @param client will never be {@literal null}.
+	 * @return Result iterator
+	 * @throws AerospikeException in case of encountering an error while interacting
+	 * 		with AerospikeClient an AerospikeException will be thrown.
+	 */
 	T resultIterator(AerospikeClient client) throws AerospikeException;
 }

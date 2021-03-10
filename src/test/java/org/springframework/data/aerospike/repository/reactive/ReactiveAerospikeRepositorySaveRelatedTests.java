@@ -1,6 +1,5 @@
 package org.springframework.data.aerospike.repository.reactive;
 
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 
 /**
  * @author Igor Ermolenko
@@ -38,7 +36,6 @@ public class ReactiveAerospikeRepositorySaveRelatedTests extends BaseReactiveInt
         customer2 = Customer.builder().id(nextId()).firstname("Marge").lastname("Simpson").age(39).build();
         customer3 = Customer.builder().id(nextId()).firstname("Bart").lastname("Simpson").age(15).build();
     }
-
 
     @Test
     public void saveEntityShouldInsertNewEntity() {
@@ -132,12 +129,10 @@ public class ReactiveAerospikeRepositorySaveRelatedTests extends BaseReactiveInt
         }).verifyComplete();
     }
 
-
     private void assertCustomerExistsInRepo(Customer customer) {
         StepVerifier.create(customerRepo.findById(customer.getId())).consumeNextWith(actual -> {
             assertThat(actual.getFirstname()).isEqualTo(customer.getFirstname());
             assertThat(actual.getLastname()).isEqualTo(customer.getLastname());
         }).verifyComplete();
     }
-
 }

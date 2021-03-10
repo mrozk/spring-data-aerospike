@@ -1,6 +1,5 @@
 package org.springframework.data.aerospike.repository.reactive;
 
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +9,6 @@ import org.springframework.data.aerospike.sample.ReactiveCustomerRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
-
 
 /**
  * @author Igor Ermolenko
@@ -28,7 +26,6 @@ public class ReactiveAerospikeRepositoryExistRelatedTests extends BaseReactiveIn
         customer2 = Customer.builder().id(nextId()).firstname("Marge").lastname("Simpson").age(39).build();
         StepVerifier.create(customerRepo.saveAll(Flux.just(customer1, customer2))).expectNextCount(2).verifyComplete();
     }
-
 
     @Test
     public void existsById_ShouldReturnTrueWhenExists() {
@@ -60,5 +57,4 @@ public class ReactiveAerospikeRepositoryExistRelatedTests extends BaseReactiveIn
                 .subscribeOn(Schedulers.parallel()))
                 .expectNext(true).verifyComplete();
     }
-
 }

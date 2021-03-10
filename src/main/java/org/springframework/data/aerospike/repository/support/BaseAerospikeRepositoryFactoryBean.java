@@ -51,5 +51,4 @@ public abstract class BaseAerospikeRepositoryFactoryBean<T extends Repository <S
 	public void afterPropertiesSet() {
 		super.afterPropertiesSet();
 	}
-
 }
