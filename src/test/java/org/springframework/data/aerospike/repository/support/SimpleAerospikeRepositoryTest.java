@@ -165,7 +165,7 @@ public class SimpleAerospikeRepositoryTest {
 	}
 
 	@Test
-	public void deleteIterableOfQextendsT() {
+	public void deleteIterableOfQExtendsT() {
 		aerospikeRepository.deleteAll(testPersons);
 
 		verify(operations, times(testPersons.size())).delete(any(Person.class));
