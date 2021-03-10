@@ -108,7 +108,7 @@ public class AerospikeQueryCreator extends 	AbstractQueryCreator<Query, Aerospik
 			throw new IllegalArgumentException("Unsupported keyword!");
 		}
 
-		//customization for collection/map query
+		// Customization for collection/map query
 		TypeInformation<?> propertyType = property.getTypeInformation();
 		if (propertyType.isCollectionLike()) {
 			if (op == FilterOperation.CONTAINING) {
@@ -132,9 +132,9 @@ public class AerospikeQueryCreator extends 	AbstractQueryCreator<Query, Aerospik
 			}
 		}
 
-		if(null == v2)
-			return new AerospikeCriteria(fieldName, op,  ignoreCase==IgnoreCaseType.ALWAYS, Value.get(v1));
-
+		if (null == v2) {
+			return new AerospikeCriteria(fieldName, op, ignoreCase == IgnoreCaseType.ALWAYS, Value.get(v1));
+		}
 		return new AerospikeCriteria(fieldName, op, Value.get(v1), Value.get(v2));
 	}
 
@@ -176,7 +176,7 @@ public class AerospikeQueryCreator extends 	AbstractQueryCreator<Query, Aerospik
 	}
 
 	@SuppressWarnings("unused")
-	private boolean isSimpleComparisionPossible(Part part) {
+	private boolean isSimpleComparisonPossible(Part part) {
 		switch (part.shouldIgnoreCase()) {
 			case WHEN_POSSIBLE:
 				return part.getProperty().getType() != String.class;

@@ -29,19 +29,18 @@ import org.springframework.data.repository.Repository;
  */
 public interface AerospikeRepository<T, ID> extends PagingAndSortingRepository<T, ID> {
 
-	<T> void createIndex(Class<T> domainType, String indexName, String binName, IndexType indexType);
+	<E> void createIndex(Class<E> domainType, String indexName, String binName, IndexType indexType);
 
-	<T> void deleteIndex(Class<T> domainType, String indexName);
+	<E> void deleteIndex(Class<E> domainType, String indexName);
 
 	/**
 	 * Checks whether index by specified name exists in Aerospike.
-	 * @param indexName
+	 * @param indexName The Aerospike index name.
 	 * @return true if exists
 	 * @deprecated This operation is deprecated due to complications that are required for guaranteed index existence response.
-	 * <p>If you need to conditionally create index \u2014 replace {@link #indexExists} with {@link #createIndex} and catch {@link IndexAlreadyExistsException}.
+	 * <p>If you need to conditionally create index \u2014 replace this method (indexExists) with {@link #createIndex} and catch {@link IndexAlreadyExistsException}.
 	 * <p>More information can be found at: <a href="https://github.com/aerospike/aerospike-client-java/pull/149">https://github.com/aerospike/aerospike-client-java/pull/149</a>
 	 */
 	@Deprecated
 	boolean indexExists(String indexName);
-
 }

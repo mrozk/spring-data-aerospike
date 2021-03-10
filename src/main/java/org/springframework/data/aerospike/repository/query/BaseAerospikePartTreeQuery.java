@@ -36,8 +36,8 @@ public abstract class BaseAerospikePartTreeQuery implements RepositoryQuery {
     private final Class<? extends AbstractQueryCreator<?, ?>> queryCreator;
     protected final QueryMethod queryMethod;
 
-
-    public BaseAerospikePartTreeQuery(QueryMethod queryMethod, QueryMethodEvaluationContextProvider evalContextProvider,
+    public BaseAerospikePartTreeQuery(QueryMethod queryMethod,
+                                      QueryMethodEvaluationContextProvider evalContextProvider,
                                       Class<? extends AbstractQueryCreator<?, ?>> queryCreator) {
         this.queryMethod = queryMethod;
         this.evaluationContextProvider = evalContextProvider;
@@ -81,7 +81,6 @@ public abstract class BaseAerospikePartTreeQuery implements RepositoryQuery {
         return q;
     }
 
-
     public Query createQuery(ParametersParameterAccessor accessor) {
         PartTree tree = new PartTree(queryMethod.getName(), queryMethod.getEntityInformation().getJavaType());
 
@@ -89,5 +88,4 @@ public abstract class BaseAerospikePartTreeQuery implements RepositoryQuery {
                 .getConstructorIfAvailable(queryCreator, PartTree.class, ParameterAccessor.class);
         return (Query) BeanUtils.instantiateClass(constructor, tree, accessor).createQuery();
     }
-
 }

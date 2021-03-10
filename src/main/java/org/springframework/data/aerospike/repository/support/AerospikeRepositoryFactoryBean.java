@@ -20,11 +20,8 @@ import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
 
 /**
- *
- *
  * @author Peter Milne
  * @author Jean Mercier
- *
  */
 public class AerospikeRepositoryFactoryBean<T extends Repository <S, ID>, S, ID> extends
 		BaseAerospikeRepositoryFactoryBean<T, S, ID> {
@@ -50,5 +47,4 @@ public class AerospikeRepositoryFactoryBean<T extends Repository <S, ID>, S, ID>
 	public void setKeyValueOperations(AerospikeOperations operations) {
 		this.operations = operations;
 	}
-
 }
