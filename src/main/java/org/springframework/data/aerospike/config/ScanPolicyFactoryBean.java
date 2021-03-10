@@ -37,7 +37,7 @@ public class ScanPolicyFactoryBean extends ReadPolicyFactoryBean {
 
 	/**
 	 * Configures scan requests to be issued in parallel or serially. 
-	 * @param concurrentNodes
+	 * @param concurrentNodes The concurrentNodes configuration value.
 	 */
 	public void setConcurrentNodes(boolean concurrentNodes){
 		this.policy.concurrentNodes = concurrentNodes;
@@ -45,7 +45,7 @@ public class ScanPolicyFactoryBean extends ReadPolicyFactoryBean {
 	
 	/**
 	 * Configures termination of scan if cluster in fluctuating state.
-	 * @param failOnClusterChange
+	 * @param failOnClusterChange The failOnClusterChange configuration value.
 	 */
 	public void setFailOnClusterChange(boolean failOnClusterChange){
 		this.policy.failOnClusterChange = failOnClusterChange;
@@ -53,7 +53,7 @@ public class ScanPolicyFactoryBean extends ReadPolicyFactoryBean {
 	
 	/**
 	 * Indicates if bin data is retrieved. If false, only record digests are retrieved.
-	 * @param includeBinData
+	 * @param includeBinData The includeBinData configuration value.
 	 */
 	public void setIncludeBinData(boolean includeBinData){
 		this.policy.includeBinData = includeBinData;
@@ -67,7 +67,7 @@ public class ScanPolicyFactoryBean extends ReadPolicyFactoryBean {
 	 * <p>
 	 * This property is only relevant when concurrentNodes is true.
 	 * Default (0) is to issue requests to all server nodes in parallel.
-	 * @param maxConcurrentNodes
+	 * @param maxConcurrentNodes The maxConcurrentNodes configuration value.
 	 */
 	public void setMaxConcurrentNodes(int maxConcurrentNodes){
 		this.policy.maxConcurrentNodes = maxConcurrentNodes;
@@ -76,7 +76,7 @@ public class ScanPolicyFactoryBean extends ReadPolicyFactoryBean {
 	/**
 	 * Configure the percent of data to scan.  Valid integer range is 1 to 100.
 	 * Default is 100.
-	 * @param scanPercent
+	 * @param scanPercent The scanPercent configuration value.
 	 */
 	public void setScanPercent(int scanPercent){
 		this.policy.scanPercent = scanPercent;
