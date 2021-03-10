@@ -35,7 +35,6 @@ public class SimpleAerospikeRepository<T, ID> implements AerospikeRepository<T, 
 
 	private final AerospikeOperations operations;
 	private final EntityInformation<T, ID> entityInformation;
-
 	
 	public SimpleAerospikeRepository(EntityInformation<T, ID> metadata,
 			AerospikeOperations operations) {
@@ -79,10 +78,9 @@ public class SimpleAerospikeRepository<T, ID> implements AerospikeRepository<T, 
 
 	@Override
 	public Page<T> findAll(Pageable pageable) {
-
 		if (pageable == null) {
 			List<T> result = findAll();
-			return new PageImpl<T>(result, null, result.size());
+			return new PageImpl<>(result, null, result.size());
 		}
 
 		Class<T> type = entityInformation.getJavaType();
@@ -91,7 +89,7 @@ public class SimpleAerospikeRepository<T, ID> implements AerospikeRepository<T, 
 		Stream<T> content = operations.findInRange(pageable.getOffset(), pageable.getPageSize(), pageable.getSort(), type);
 		long totalCount = operations.count(setName);
 
-		return new PageImpl<T>(content.collect(Collectors.toList()), pageable, totalCount);
+		return new PageImpl<>(content.collect(Collectors.toList()), pageable, totalCount);
 	}
 
 	@Override
@@ -133,12 +131,12 @@ public class SimpleAerospikeRepository<T, ID> implements AerospikeRepository<T, 
 	}
 
 	@Override
-	public <T> void createIndex(Class<T> domainType, String indexName, String binName, IndexType indexType) {
+	public <E> void createIndex(Class<E> domainType, String indexName, String binName, IndexType indexType) {
 		operations.createIndex(domainType, indexName, binName, indexType);
 	}
 
 	@Override
-	public <T> void deleteIndex(Class<T> domainType, String indexName) {
+	public <E> void deleteIndex(Class<E> domainType, String indexName) {
 		operations.deleteIndex(domainType, indexName);
 	}
 
@@ -146,5 +144,4 @@ public class SimpleAerospikeRepository<T, ID> implements AerospikeRepository<T, 
 	public boolean indexExists(String indexName) {
 		return operations.indexExists(indexName);
 	}
-
 }

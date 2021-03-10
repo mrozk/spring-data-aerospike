@@ -1,6 +1,5 @@
 package org.springframework.data.aerospike.repository.reactive;
 
-
 import com.aerospike.client.query.IndexType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,16 +22,15 @@ import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.data.domain.Sort.Order.asc;
 
-
 /**
  * @author Igor Ermolenko
  */
 public class ReactiveAerospikeRepositoryFindRelatedTests extends BaseReactiveIntegrationTests {
+
     @Autowired
     ReactiveCustomerRepository customerRepo;
 
     private Customer customer1, customer2, customer3, customer4;
-
 
     @BeforeEach
     public void setUp() {
