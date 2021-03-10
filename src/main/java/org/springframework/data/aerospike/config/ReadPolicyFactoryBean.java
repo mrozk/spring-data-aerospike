@@ -21,7 +21,7 @@ import com.aerospike.client.policy.Policy;
 import com.aerospike.client.policy.Priority;
 
 /**
- * A {@link FactoryBean} implementation that exposes the setters necessary to configure a {@link ReadPolicy} via XML.
+ * A {@link FactoryBean} implementation that exposes the setters necessary to configure a read policy via XML.
  * 
  * @author Peter Milne
  */
@@ -38,7 +38,7 @@ public class ReadPolicyFactoryBean implements FactoryBean<Policy> {
 
 	/**
 	 * Configures the timeout for each transaction attempt of an operation.
-	 * @param socketTimeout
+	 * @param socketTimeout The socketTimeout configuration value.
 	 */
 	public void setSocketTimeout(int socketTimeout){
 		this.policy.socketTimeout = socketTimeout;
@@ -46,7 +46,7 @@ public class ReadPolicyFactoryBean implements FactoryBean<Policy> {
 
 	/**
 	 * Configures the timeout for an operation.
-	 * @param totalTimeout
+	 * @param totalTimeout The totalTimeout configuration value.
 	 */
 	public void setTotalTimeout(int totalTimeout){
 		this.policy.totalTimeout = totalTimeout;
@@ -57,6 +57,7 @@ public class ReadPolicyFactoryBean implements FactoryBean<Policy> {
 	 * A retry is attempted when there is a network error other than timeout.  
 	 * If maxRetries is exceeded, the abort will occur even if the timeout 
 	 * has not yet been exceeded.  The default number of retries is 1.
+	 * @param maxRetries The maxRetries configuration value.
 	 */
 	public void setMaxRetries(int maxRetries){
 		this.policy.maxRetries = maxRetries;
@@ -66,6 +67,7 @@ public class ReadPolicyFactoryBean implements FactoryBean<Policy> {
 	 * Configures the sleep between retries if a transaction fails and the 
 	 * timeout was not exceeded.  Enter zero to skip sleep.
 	 * The default sleep between retries is 500 ms.
+	 * @param sleepBetweenRetries The sleepBetweenRetries configuration value.
 	 */
 	public void setSleepBetweenRetries(int sleepBetweenRetries){
 		this.policy.sleepBetweenRetries = sleepBetweenRetries;
@@ -74,6 +76,7 @@ public class ReadPolicyFactoryBean implements FactoryBean<Policy> {
 	/**
 	 * Configures the priority of request relative to other transactions.
 	 * Currently, only used for scans.
+	 * @param priority The priority configuration value.
 	 */
 	public void setPriority(Priority priority){
 		this.policy.priority = priority;

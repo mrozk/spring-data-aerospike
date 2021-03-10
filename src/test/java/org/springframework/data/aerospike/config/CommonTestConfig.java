@@ -37,5 +37,4 @@ public class CommonTestConfig {
     public QueryEngineTestDataPopulator queryEngineTestDataPopulator(AerospikeClient client) {
         return new QueryEngineTestDataPopulator(namespace, client);
     }
-
 }
