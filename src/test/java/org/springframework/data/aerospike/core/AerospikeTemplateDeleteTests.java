@@ -18,14 +18,10 @@ package org.springframework.data.aerospike.core;
 import com.aerospike.client.policy.GenerationPolicy;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.aerospike.BaseBlockingIntegrationTests;
-import org.springframework.data.aerospike.SampleClasses;
-import org.springframework.data.aerospike.SampleClasses.CustomCollectionClass;
 import org.springframework.data.aerospike.SampleClasses.CustomCollectionClassToDelete;
 import org.springframework.data.aerospike.SampleClasses.DocumentWithExpiration;
 import org.springframework.data.aerospike.SampleClasses.VersionedClass;
-import org.springframework.data.aerospike.mapping.Document;
 import org.springframework.data.aerospike.sample.Person;
-import org.springframework.data.annotation.Id;
 
 import java.util.Arrays;
 
@@ -117,9 +113,7 @@ public class AerospikeTemplateDeleteTests extends BaseBlockingIntegrationTests {
         // truncate is async operation that is why we need to wait until
         // it completes
         await().atMost(TEN_SECONDS)
-                .untilAsserted(() -> {
-                    assertThat(template.findByIds(Arrays.asList(id1, id2), CustomCollectionClassToDelete.class)).hasSize(0);
-                });
+                .untilAsserted(() -> assertThat(template.findByIds(Arrays.asList(id1, id2), CustomCollectionClassToDelete.class)).hasSize(0));
     }
 
     @Test

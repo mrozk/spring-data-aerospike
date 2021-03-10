@@ -19,10 +19,8 @@ import com.aerospike.client.query.Filter;
 import org.springframework.data.aerospike.query.Qualifier;
 
 /**
- *
  * @author Peter Milne
  * @author Jean Mercier
- *
  */
 public interface CriteriaDefinition {
 
@@ -38,7 +36,7 @@ public interface CriteriaDefinition {
 	 */
 	String getKey();
 	
-	public enum AerospikeMapCriteria{
+	enum AerospikeMapCriteria{
 		KEY,
 		VALUE
 	}

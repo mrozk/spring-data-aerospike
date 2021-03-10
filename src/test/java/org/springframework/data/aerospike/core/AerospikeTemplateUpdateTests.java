@@ -38,7 +38,7 @@ import static org.springframework.data.aerospike.SampleClasses.VersionedClass;
 public class AerospikeTemplateUpdateTests extends BaseBlockingIntegrationTests {
 
     @Test
-    public void shouldThrowExceptionOnUpdateForNonexistingKey() {
+    public void shouldThrowExceptionOnUpdateForNonExistingKey() {
         assertThatThrownBy(() -> template.update(new Person(id, "svenfirstName", 11)))
                 .isInstanceOf(DataRetrievalFailureException.class);
     }

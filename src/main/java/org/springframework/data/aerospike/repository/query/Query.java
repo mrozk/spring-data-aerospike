@@ -20,10 +20,8 @@ import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.keyvalue.core.query.KeyValueQuery;
 
 /**
- *
  * @author Peter Milne
  * @author Jean Mercier
- *
  */
 public class Query {
 
@@ -158,7 +156,7 @@ public class Query {
 			if (order.isIgnoreCase()) {
 				throw new IllegalArgumentException(String.format(
 						"Given sort contained an Order for %s with ignore case! "
-								+ "Aerospike does not support sorting ignoreing case currently!",
+								+ "Aerospike does not support sorting ignoring case currently!",
 						order.getProperty()));
 			}
 		}
@@ -171,5 +169,4 @@ public class Query {
 
 		return this;
 	}
-
 }

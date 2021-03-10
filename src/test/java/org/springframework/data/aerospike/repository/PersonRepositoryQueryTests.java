@@ -24,16 +24,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.springframework.data.aerospike.repository.PersonTestData.alicia;
-import static org.springframework.data.aerospike.repository.PersonTestData.all;
-import static org.springframework.data.aerospike.repository.PersonTestData.boyd;
-import static org.springframework.data.aerospike.repository.PersonTestData.carter;
-import static org.springframework.data.aerospike.repository.PersonTestData.dave;
-import static org.springframework.data.aerospike.repository.PersonTestData.donny;
-import static org.springframework.data.aerospike.repository.PersonTestData.leroi;
-import static org.springframework.data.aerospike.repository.PersonTestData.leroi2;
-import static org.springframework.data.aerospike.repository.PersonTestData.oliver;
-import static org.springframework.data.aerospike.repository.PersonTestData.stefan;
+import static org.springframework.data.aerospike.repository.PersonTestData.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class PersonRepositoryQueryTests extends BaseBlockingIntegrationTests {
@@ -166,7 +157,7 @@ public class PersonRepositoryQueryTests extends BaseBlockingIntegrationTests {
 
     @Test
     public void findByFirstnameNotIn_forEmptyResult() {
-        Set<String> allFirstNames = all.stream().map(p -> p.getFirstName()).collect(Collectors.toSet());
+        Set<String> allFirstNames = all.stream().map(Person::getFirstName).collect(Collectors.toSet());
 //		Stream<Person> result = repository.findByFirstnameNotIn(allFirstNames);
         assertThatThrownBy(() -> repository.findByFirstNameNotIn(allFirstNames))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -340,14 +331,17 @@ public class PersonRepositoryQueryTests extends BaseBlockingIntegrationTests {
         assertThat(result).hasSize(1);
     }
 
-//	@Ignore("Searching by association not Supported Yet!" )@Test
-//	public void findsPersonByShippingAddressesCorrectly() {
-//
-//		Address address = new Address("Foo Street 1", "C0123", "Bar");
-//		dave.setShippingAddresses(new HashSet<Address>(asList(address)));
-//
-//		repository.save(dave);
-//		Person person = repository.findByShippingAddresses(address);
-//		assertThat(repository.findByShippingAddresses(address), is(dave));
-//	}
+    /*
+	@Ignore("Searching by association not Supported Yet!" )
+    @Test
+	public void findsPersonByShippingAddressesCorrectly() {
+
+		Address address = new Address("Foo Street 1", "C0123", "Bar");
+	    dave.setShippingAddresses(new HashSet<Address>(asList(address)));
+
+		repository.save(dave);
+		Person person = repository.findByShippingAddresses(address);
+		assertThat(repository.findByShippingAddresses(address), is(dave));
+	}
+     */
 }

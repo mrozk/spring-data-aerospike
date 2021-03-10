@@ -257,5 +257,4 @@ public class AerospikeTemplateSaveTests extends BaseBlockingIntegrationTests {
 
         assertThat(result).isEqualTo(document);
     }
-
 }

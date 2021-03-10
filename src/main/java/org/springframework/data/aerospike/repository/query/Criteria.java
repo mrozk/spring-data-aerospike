@@ -27,10 +27,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
- *
  * @author Peter Milne
  * @author Jean Mercier
- *
  */
 public class Criteria implements CriteriaDefinition {
 
@@ -266,5 +264,4 @@ public class Criteria implements CriteriaDefinition {
 		this.criteria.put(Qualifier.FilterOperation.GEO_WITHIN.name(), qualifier);
 		return this;
 	}
-
 }

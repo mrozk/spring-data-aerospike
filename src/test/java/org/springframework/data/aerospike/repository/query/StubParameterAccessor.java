@@ -15,27 +15,21 @@
  */
 package org.springframework.data.aerospike.repository.query;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Optional;
 
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Range;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.geo.Distance;
-
 /**
- *
- *
  * @author Peter Milne
  * @author Jean Mercier
- *
  */
 public class StubParameterAccessor implements AerospikeParameterAccessor {
 	
 	private final Object[] values;
-	
-	@SuppressWarnings("unchecked")
+
 	public StubParameterAccessor(Object... values) {
 		this.values = values;
 	}
@@ -96,5 +90,4 @@ public class StubParameterAccessor implements AerospikeParameterAccessor {
 	public Class<?> findDynamicProjection() {
 		return null;
 	}
-
 }

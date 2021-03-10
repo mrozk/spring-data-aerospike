@@ -74,12 +74,9 @@ public class ReactiveAerospikeRepositoryFactoryTest {
         assertThat(entityInformation).isInstanceOf(PersistentEntityInformation.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void getTargetRepositoryRepositoryInformation() {
         when(aerospikeRepositoryFactoryMock.getTargetRepository(repositoryInformation)).thenReturn(new Object());
-
-        Person.class.getDeclaredConstructors();
 
         Object repository = aerospikeRepositoryFactoryMock.getTargetRepository(repositoryInformation);
         assertThat(repository).isNotNull();
@@ -91,9 +88,8 @@ public class ReactiveAerospikeRepositoryFactoryTest {
         Mockito.<Class<?>>when(metadata.getRepositoryInterface()).thenReturn(SimpleKeyValueRepository.class);
 
         ReactiveAerospikeRepositoryFactory factory = new ReactiveAerospikeRepositoryFactory(aerospikeOperations);
-        Class<?> repbaseClass = factory.getRepositoryBaseClass(metadata);
+        Class<?> repositoryBaseClass = factory.getRepositoryBaseClass(metadata);
 
-        assertThat(repbaseClass.getSimpleName()).isEqualTo(SimpleKeyValueRepository.class.getSimpleName());
+        assertThat(repositoryBaseClass.getSimpleName()).isEqualTo(SimpleKeyValueRepository.class.getSimpleName());
     }
-
 }

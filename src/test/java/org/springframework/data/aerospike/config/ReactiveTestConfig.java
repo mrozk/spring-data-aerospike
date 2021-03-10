@@ -55,21 +55,22 @@ public class ReactiveTestConfig extends AbstractReactiveAerospikeDataConfigurati
     @Override
     protected EventLoops eventLoops() {
         return new NioEventLoops();
-// TODO: support parameterized EventLoopType
-//
-//		case DIRECT_NIO: {
-//			return new NioEventLoops(1);
-//		}
-//
-//		case NETTY_NIO: {
-//			EventLoopGroup group = new NioEventLoopGroup(1);
-//			return new NettyEventLoops(group);
-//		}
-//
-//		case NETTY_EPOLL: {
-//			EventLoopGroup group = new EpollEventLoopGroup(1);
-//			return new NettyEventLoops(group);
-//		}
+        //TODO: support parameterized EventLoopType
+        /*
+		case DIRECT_NIO: {
+			return new NioEventLoops(1);
+		}
+
+		case NETTY_NIO: {
+			EventLoopGroup group = new NioEventLoopGroup(1);
+			return new NettyEventLoops(group);
+		}
+
+		case NETTY_EPOLL: {
+			EventLoopGroup group = new EpollEventLoopGroup(1);
+			return new NettyEventLoops(group);
+		}
+         */
     }
 
     @Override
@@ -80,7 +81,7 @@ public class ReactiveTestConfig extends AbstractReactiveAerospikeDataConfigurati
     @Bean
     public AdditionalAerospikeTestOperations aerospikeOperations(ReactiveAerospikeTemplate template,
                                                                  AerospikeClient client,
-                                                                 GenericContainer aerospike) {
+                                                                 GenericContainer<?> aerospike) {
         return new ReactiveBlockingAerospikeTestOperations(new IndexInfoParser(), client, aerospike, template);
     }
 }

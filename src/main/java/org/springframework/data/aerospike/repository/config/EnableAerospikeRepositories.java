@@ -15,22 +15,16 @@
  */
 package org.springframework.data.aerospike.repository.config;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.aerospike.repository.support.AerospikeRepositoryFactoryBean;
 import org.springframework.data.aerospike.repository.support.SimpleAerospikeRepository;
 import org.springframework.data.keyvalue.core.KeyValueOperations;
-import org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFactoryBean;
 import org.springframework.data.repository.query.QueryLookupStrategy;
 import org.springframework.data.repository.query.QueryLookupStrategy.Key;
+
+import java.lang.annotation.*;
 
 /**
  * Annotation to activate Aerospike repositories. If no base package is configured through either {@link #value()},
@@ -43,8 +37,6 @@ import org.springframework.data.repository.query.QueryLookupStrategy.Key;
 @Documented
 @Inherited
 @Import(AerospikeRepositoriesRegistrar.class)
-//@QueryCreatorType(SpelQueryCreator.class)
-//@QueryCreatorType(AerospikeQueryCreator.class)
 public @interface EnableAerospikeRepositories {
 
 	/**
@@ -81,47 +73,35 @@ public @interface EnableAerospikeRepositories {
 	 * Returns the postfix to be used when looking up custom repository implementations. Defaults to {@literal Impl}. So
 	 * for a repository named {@code PersonRepository} the corresponding implementation class will be looked up scanning
 	 * for {@code PersonRepositoryImpl}.
-	 * 
-	 * @return
 	 */
 	String repositoryImplementationPostfix() default "Impl";
 
 	/**
 	 * Configures the location of where to find the Spring Data named queries properties file.
-	 * 
-	 * @return
 	 */
 	String namedQueriesLocation() default "";
 
 	/**
 	 * Returns the key of the {@link QueryLookupStrategy} to be used for lookup queries for query methods. Defaults to
 	 * {@link Key#CREATE_IF_NOT_FOUND}.
-	 * 
-	 * @return
 	 */
 	Key queryLookupStrategy() default Key.CREATE_IF_NOT_FOUND;
 
 	/**
 	 * Returns the {@link FactoryBean} class to be used for each repository instance.
 	 * Defaults to {@link AerospikeRepositoryFactoryBean}.
-	 * 
-	 * @return
 	 */
 	Class<?> repositoryFactoryBeanClass() default AerospikeRepositoryFactoryBean.class;
 	
 	/**
 	 * Configure the repository base class to be used to create repository proxies for this particular configuration.
 	 * Defaults to {@link SimpleAerospikeRepository}.
-	 *
-	 * @return
 	 * @since 1.8
 	 */
 	Class<?> repositoryBaseClass() default SimpleAerospikeRepository.class;
 
 	/**
 	 * Configures the name of the {@link KeyValueOperations} bean to be used with the repositories detected.
-	 * 
-	 * @return
 	 */
 	String keyValueTemplateRef() default "aerospikeTemplate";
 

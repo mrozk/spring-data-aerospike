@@ -18,10 +18,8 @@ package org.springframework.data.aerospike.repository.query;
 import org.springframework.data.repository.query.ParameterAccessor;
 
 /**
- *
  * @author Peter Milne
  * @author Jean Mercier
- *
  */
 public interface AerospikeParameterAccessor extends ParameterAccessor {
 
