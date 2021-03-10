@@ -172,6 +172,11 @@
                 <artifactId>joda-time</artifactId>
                 <version>${jodatime}</version>
             </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -219,6 +224,12 @@
             <optional>true</optional>
         </dependency>
 
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
         <!--TEST dependencies-->
         <dependency>
             <groupId>io.projectreactor</groupId>
@@ -256,13 +267,6 @@
             <artifactId>blockhound</artifactId>
             <version>${blockhound.version}</version>
             <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
-            <scope>provided</scope>
         </dependency>
 
     </dependencies>
