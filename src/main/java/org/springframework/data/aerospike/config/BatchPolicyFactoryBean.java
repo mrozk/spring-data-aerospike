@@ -37,7 +37,7 @@ public class BatchPolicyFactoryBean extends ReadPolicyFactoryBean {
 
 	/**
 	 * Configures the maximum number of concurrent batch request threads to server nodes at any point in time
-	 * @param maxConcurrentThreads
+	 * @param maxConcurrentThreads The maxConcurrentThreads configuration value.
 	 */
 	public void setMaxConcurrentThreads(int maxConcurrentThreads){
 		this.policy.maxConcurrentThreads = maxConcurrentThreads;

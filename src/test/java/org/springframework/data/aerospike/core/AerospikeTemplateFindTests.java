@@ -71,7 +71,7 @@ public class AerospikeTemplateFindTests extends BaseBlockingIntegrationTests {
     }
 
     @Test
-    public void findbyIdFail() {
+    public void findByIdFail() {
         Person person = new Person(id, "Oliver");
         person.setAge(25);
         template.insert(person);

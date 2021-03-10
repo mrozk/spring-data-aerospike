@@ -41,7 +41,7 @@ public class QueryPolicyFactoryBean extends ReadPolicyFactoryBean {
 	 * will be made to 8 nodes in parallel.  When a query completes, a new query will 
 	 * be issued until all 16 nodes have been queried.
 	 * Default (0) is to issue requests to all server nodes in parallel.
-	 * @param maxConcurrentNodes
+	 * @param maxConcurrentNodes The maxConcurrentNodes configuration value.
 	 */
 	public void setMaxConcurrentNodes(int maxConcurrentNodes){
 		this.policy.maxConcurrentNodes = maxConcurrentNodes;
@@ -52,7 +52,7 @@ public class QueryPolicyFactoryBean extends ReadPolicyFactoryBean {
 	 * Records received from multiple server nodes will be placed in a queue.
 	 * A separate thread consumes these records in parallel.
 	 * If the queue is full, the producer threads will block until records are consumed.
-	 * @param recordQueueSize
+	 * @param recordQueueSize The recordQueueSize configuration value.
 	 */
 	public void setRecordQueueSize(int recordQueueSize){
 		this.policy.recordQueueSize = recordQueueSize;

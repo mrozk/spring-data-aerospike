@@ -40,5 +40,4 @@ public class PersonTestData {
         public static List<IndexedPerson> all = Arrays.asList(oliver, dave, donny, carter, boyd, stefan, leroi, leroi2, alicia);
 
     }
-
 }

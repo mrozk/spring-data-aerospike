@@ -144,5 +144,4 @@ public class SimpleReactiveAerospikeRepository<T, ID> implements ReactiveAerospi
     public void deleteIndex(Class<T> domainType, String indexName) {
         operations.deleteIndex(domainType, indexName);
     }
-
 }

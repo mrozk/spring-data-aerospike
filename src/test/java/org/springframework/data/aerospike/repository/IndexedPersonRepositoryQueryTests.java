@@ -25,15 +25,7 @@ import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.springframework.data.aerospike.repository.PersonTestData.Indexed.alicia;
-import static org.springframework.data.aerospike.repository.PersonTestData.Indexed.boyd;
-import static org.springframework.data.aerospike.repository.PersonTestData.Indexed.carter;
-import static org.springframework.data.aerospike.repository.PersonTestData.Indexed.dave;
-import static org.springframework.data.aerospike.repository.PersonTestData.Indexed.donny;
-import static org.springframework.data.aerospike.repository.PersonTestData.Indexed.leroi;
-import static org.springframework.data.aerospike.repository.PersonTestData.Indexed.leroi2;
-import static org.springframework.data.aerospike.repository.PersonTestData.Indexed.oliver;
-import static org.springframework.data.aerospike.repository.PersonTestData.Indexed.stefan;
+import static org.springframework.data.aerospike.repository.PersonTestData.Indexed.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class IndexedPersonRepositoryQueryTests extends BaseBlockingIntegrationTests {
@@ -240,5 +232,4 @@ public class IndexedPersonRepositoryQueryTests extends BaseBlockingIntegrationTe
         Iterable<IndexedPerson> result = repository.findByAgeBetweenAndLastName(20, 26, "Moore");
         assertThat(result).hasSize(1);
     }
-
 }

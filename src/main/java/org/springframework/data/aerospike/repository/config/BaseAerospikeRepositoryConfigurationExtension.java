@@ -21,6 +21,7 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.data.aerospike.repository.query.AerospikeQueryCreator;
 import org.springframework.data.keyvalue.repository.config.KeyValueRepositoryConfigurationExtension;
 import org.springframework.data.keyvalue.repository.config.QueryCreatorType;
+import org.springframework.data.keyvalue.repository.query.SpelQueryCreator;
 import org.springframework.data.repository.config.AnnotationRepositoryConfigurationSource;
 
 import java.util.Map;
@@ -45,8 +46,8 @@ public abstract class BaseAerospikeRepositoryConfigurationExtension extends KeyV
      * Detects the query creator type to be used for the factory to set. Will lookup a {@link QueryCreatorType} annotation
      * on the {@code @Enable}-annotation or use {@link SpelQueryCreator} if not found.
      *
-     * @param config
-     * @return
+     * @param config The annotation repository configuration to get the query creator metadata from.
+     * @return Query creator class.
      */
     private static Class<?> getQueryCreatorType(AnnotationRepositoryConfigurationSource config) {
 

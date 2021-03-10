@@ -90,9 +90,6 @@ public interface ReactiveAerospikeOperations {
 
     /**
      * Deletes index by specified name from Aerospike.
-     * @param entityClass
-     * @param indexName
      */
     <T> Mono<Void> deleteIndex(Class<T> entityClass, String indexName);
-
 }

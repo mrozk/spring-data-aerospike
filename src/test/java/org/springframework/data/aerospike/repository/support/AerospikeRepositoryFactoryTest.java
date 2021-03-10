@@ -40,11 +40,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- *
- *
  * @author Peter Milne
  * @author Jean Mercier
- *
  */
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -74,12 +71,9 @@ public class AerospikeRepositoryFactoryTest {
 		assertThat(entityInformation).isInstanceOf(PersistentEntityInformation.class);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void getTargetRepositoryRepositoryInformation() {
 		when(aerospikeRepositoryFactoryMock.getTargetRepository(repositoryInformation)).thenReturn(new Object());
-
-		Person.class.getDeclaredConstructors();
 
 		Object repository = aerospikeRepositoryFactoryMock.getTargetRepository(repositoryInformation);
 		assertThat(repository).isNotNull();
@@ -90,8 +84,7 @@ public class AerospikeRepositoryFactoryTest {
 		RepositoryMetadata metadata = mock(RepositoryMetadata.class);
 		Mockito.<Class<?>>when(metadata.getRepositoryInterface()).thenReturn(SimpleKeyValueRepository.class);
 		AerospikeRepositoryFactory factory = new AerospikeRepositoryFactory(aerospikeOperations);
-		Class<?> repbaseClass = factory.getRepositoryBaseClass(metadata);
-		assertThat(repbaseClass.getSimpleName()).isEqualTo(SimpleKeyValueRepository.class.getSimpleName());
+		Class<?> repositoryBaseClass = factory.getRepositoryBaseClass(metadata);
+		assertThat(repositoryBaseClass.getSimpleName()).isEqualTo(SimpleKeyValueRepository.class.getSimpleName());
 	}
-
 }
