@@ -15,12 +15,8 @@
  */
 package org.springframework.data.aerospike.core;
 
-import com.aerospike.client.AerospikeException;
-import com.aerospike.client.Bin;
-import com.aerospike.client.Key;
-import com.aerospike.client.Operation;
 import com.aerospike.client.Record;
-import com.aerospike.client.Value;
+import com.aerospike.client.*;
 import com.aerospike.client.policy.RecordExistsAction;
 import com.aerospike.client.policy.WritePolicy;
 import com.aerospike.client.query.Filter;
@@ -63,9 +59,7 @@ import static org.springframework.data.aerospike.core.OperationUtils.operations;
 public class ReactiveAerospikeTemplate extends BaseAerospikeTemplate implements ReactiveAerospikeOperations {
 
     private final AerospikeReactorClient reactorClient;
-
     private final ReactorQueryEngine queryEngine;
-
     private final ReactorIndexRefresher reactorIndexRefresher;
 
     public ReactiveAerospikeTemplate(AerospikeReactorClient reactorClient,
@@ -112,7 +106,7 @@ public class ReactiveAerospikeTemplate extends BaseAerospikeTemplate implements 
         WritePolicy policy = ignoreGenerationSavePolicy(data, RecordExistsAction.CREATE_ONLY);
 
         AerospikePersistentEntity<?> entity = mappingContext.getRequiredPersistentEntity(document.getClass());
-        if(entity.hasVersionProperty()) {
+        if (entity.hasVersionProperty()) {
             // we are ignoring generation here as insert operation should fail with DuplicateKeyException if key already exists
             // and we do not mind which initial version is set in the document, BUT we need to update the version value in the original document
             // also we do not want to handle aerospike error codes as cas aware error codes as we are ignoring generation
@@ -128,7 +122,7 @@ public class ReactiveAerospikeTemplate extends BaseAerospikeTemplate implements 
 
         AerospikeWriteData data = writeData(document);
         AerospikePersistentEntity<?> entity = mappingContext.getRequiredPersistentEntity(document.getClass());
-        if(entity.hasVersionProperty()) {
+        if (entity.hasVersionProperty()) {
             WritePolicy policy = expectGenerationSavePolicy(data, RecordExistsAction.REPLACE_ONLY);
 
             return doPersistWithVersionAndHandleCasError(document, data, policy);
@@ -421,10 +415,10 @@ public class ReactiveAerospikeTemplate extends BaseAerospikeTemplate implements 
             results = results.sort(comparator);
         }
 
-        if(query.hasOffset()) {
+        if (query.hasOffset()) {
             results = results.skip(query.getOffset());
         }
-        if(query.hasRows()) {
+        if (query.hasRows()) {
             results = results.take(query.getRows());
         }
         return results;
@@ -447,5 +441,4 @@ public class ReactiveAerospikeTemplate extends BaseAerospikeTemplate implements 
         String setName = getSetName(type);
         return this.queryEngine.select(this.namespace, setName, filter, qualifiers);
     }
-
 }

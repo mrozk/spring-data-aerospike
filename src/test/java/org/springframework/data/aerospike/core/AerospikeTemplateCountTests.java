@@ -84,7 +84,7 @@ public class AerospikeTemplateCountTests extends BaseBlockingIntegrationTests {
 
     @Test
     void countForNotExistingSetIsZero() {
-        long count = template.count(Person.class, "not-existing-set-name");
+        long count = template.count("not-existing-set-name");
 
         assertThat(count).isZero();
     }

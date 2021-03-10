@@ -55,5 +55,4 @@ public class AutoIndexedDocumentAssert {
                 .indexCollectionType(collectionType)
                 .build();
     }
-
 }

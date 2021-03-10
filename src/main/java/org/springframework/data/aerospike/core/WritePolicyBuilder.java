@@ -24,7 +24,7 @@ import static com.aerospike.client.policy.GenerationPolicy.NONE;
 
 public class WritePolicyBuilder {
 
-    private WritePolicy policy;
+    private final WritePolicy policy;
 
     private WritePolicyBuilder(WritePolicy policy) {
         this.policy = policy;

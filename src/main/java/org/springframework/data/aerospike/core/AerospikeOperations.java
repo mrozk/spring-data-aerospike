@@ -42,10 +42,9 @@ import java.util.stream.Stream;
 public interface AerospikeOperations {
 
 	/**
-	 * The Set name used for the specified class by this template.
-	 * 
+	 * Returns the Set name used for the specified class by this template.
 	 * @param entityClass must not be {@literal null}.
-	 * @return
+	 * @return The set name used for the specified class.
 	 */
 	<T> String getSetName(Class<T> entityClass);
 	
@@ -53,7 +52,7 @@ public interface AerospikeOperations {
 	 * Insert operation using {@link com.aerospike.client.policy.RecordExistsAction#CREATE_ONLY} policy.
 	 *
 	 * If document has version property it will be updated with the server's version after successful operation.
-	 * @param document
+	 * @param document The document to insert.
 	 */
 	<T> void insert(T document);
 
@@ -74,14 +73,14 @@ public interface AerospikeOperations {
 	 *
 	 * If document does not have version property - record is updated with {@link com.aerospike.client.policy.RecordExistsAction#REPLACE} policy.
 	 * This means that when such record does not exist it will be created, otherwise updated.
-	 * @param document
+	 * @param document The document to save.
 	 */
 	<T> void save(T document);
 
 	/**
-	 * Persist document using specified WritePolicy
-	 * @param document
-	 * @param writePolicy
+	 * Persist document using specified WritePolicy.
+	 * @param document The document to persist.
+	 * @param writePolicy The Aerospike write policy for the inner Aerospike put operation.
 	 */
 	<T> void persist(T document, WritePolicy writePolicy);
 
@@ -90,7 +89,7 @@ public interface AerospikeOperations {
 	 * taking into consideration the version property of the document if it is present.
 	 *
 	 * If document has version property it will be updated with the server's version after successful operation.
-	 * @param objectToUpdate
+	 * @param objectToUpdate The object to update.
 	 */
 	<T> void update(T objectToUpdate);
 
@@ -125,41 +124,36 @@ public interface AerospikeOperations {
 	<T> Iterable<T> aggregate(Filter filter, Class<T> entityClass, String module, String function, List<Value> arguments);
 
 	/**
-	 * @param query
-	 * @param entityClass
-	 * @return
+	 * Execute operation against underlying store.
+	 * @param supplier must not be {@literal null}.
+	 * @return Execution result.
+	 */
+	<T> T execute(Supplier<T> supplier);
+
+	<T> Iterable<T> findAll(Sort sort, Class<T> entityClass);
+
+	<T> Stream<T> findInRange(long offset, long limit, Sort sort, Class<T> entityClass);
+
+	/**
+	 * Returns the amount of records in a query results.
+	 * @param query The query that provides the result set for count.
+	 * @param entityClass The class to provide for the query.
+	 * @return amount of records that the given query and entity class provided.
 	 */
 	<T> long count(Query query, Class<T> entityClass);
 
 	/**
-	 * Execute operation against underlying store.
-	 * 
-	 * @param supplier must not be {@literal null}.
-	 * @return
+	 * Returns the amount of records in the given Aerospike set and AerospikeTemplate configured namespace.
+	 * @return amount of records in the set (in the configured namespace).
 	 */
-	<T> T execute(Supplier<T> supplier);
+	<T> long count(String setName);
 
 	/**
-	 * @param sort
-	 * @param entityClass
-	 * @return
+	 * Returns the amount of records in the given entityClass's Aerospike set and AerospikeTemplate configured namespace.
+	 * @param entityClass The class to extract the Aerospike set from.
+	 * @return amount of records in the set (in the configured namespace).
 	 */
-	<T> Iterable<T> findAll(Sort sort, Class<T> entityClass);
-
-	/**
-	 * @param offset
-	 * @param limit
-	 * @param sort
-	 * @param entityClass
-	 * @return
-	 */
-	<T> Stream<T> findInRange(long offset, long limit, Sort sort, Class<T> entityClass);
-
-	/**
-	 * @param entityClass
-	 * @return
-	 */
-	<T> long count(Class<T> entityClass, String setName);
+	<T> long count(Class<T> entityClass);
 
 	/**
 	 * Creates index by specified name in Aerospike.
@@ -175,27 +169,19 @@ public interface AerospikeOperations {
 
 	/**
 	 * Deletes index by specified name from Aerospike.
-	 * @param entityClass
-	 * @param indexName
 	 */
 	<T> void deleteIndex(Class<T> entityClass, String indexName);
 
 	/**
 	 * Checks whether index by specified name exists in Aerospike.
-	 * @param indexName
+	 * @param indexName The Aerospike index name
 	 * @return true if exists
 	 * @deprecated This operation is deprecated due to complications that are required for guaranteed index existence response.
-	 * <p>If you need to conditionally create index \u2014 replace {@link #indexExists} with {@link #createIndex} and catch {@link IndexAlreadyExistsException}.
+	 * <p>If you need to conditionally create index \u2014 replace this method (indexExists) with {@link #createIndex} and catch {@link IndexAlreadyExistsException}.
 	 * <p>More information can be found at: <a href="https://github.com/aerospike/aerospike-client-java/pull/149">https://github.com/aerospike/aerospike-client-java/pull/149</a>
 	 */
 	@Deprecated
 	boolean indexExists(String indexName);
-
-	/**
-	 * @param entityClass
-	 * @return
-	 */
-	<T> long count(Class<T> entityClass);
 
 	AerospikeClient getAerospikeClient();
 }
