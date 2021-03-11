@@ -17,7 +17,6 @@
 package org.springframework.data.aerospike.cache;
 
 import com.aerospike.client.IAerospikeClient;
-import lombok.Builder;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.transaction.AbstractTransactionSupportingCacheManager;
@@ -38,13 +37,12 @@ import java.util.*;
  *
  * @author Venil Noronha
  */
-@Builder
 public class AerospikeCacheManager extends AbstractTransactionSupportingCacheManager {
 
 	private final IAerospikeClient aerospikeClient;
 	private final AerospikeConverter aerospikeConverter;
 	private final AerospikeCacheConfiguration defaultCacheConfiguration;
-	private final Map<String, AerospikeCacheConfiguration> initialCacheConfiguration;
+	private final Map<String, AerospikeCacheConfiguration> initialPerCacheConfiguration;
 
 	/**
 	 * Create a new {@link AerospikeCacheManager} instance -
@@ -60,7 +58,21 @@ public class AerospikeCacheManager extends AbstractTransactionSupportingCacheMan
 
 	/**
 	 * Create a new {@link AerospikeCacheManager} instance -
-	 * Specifying one or more initial caches.
+	 * Specifying a default cache configuration.
+	 *
+	 * @param aerospikeClient the instance that implements {@link IAerospikeClient}.
+	 * @param aerospikeConverter the instance that implements {@link AerospikeConverter}.
+	 * @param defaultCacheConfiguration the default cache configuration.
+	 */
+	public AerospikeCacheManager(IAerospikeClient aerospikeClient,
+								 AerospikeConverter aerospikeConverter,
+								 AerospikeCacheConfiguration defaultCacheConfiguration) {
+		this(aerospikeClient, aerospikeConverter, defaultCacheConfiguration, new LinkedHashMap<>());
+	}
+
+	/**
+	 * Create a new {@link AerospikeCacheManager} instance -
+	 * Specifying initial cache names.
 	 * Caches will be configured with default configuration.
 	 *
 	 * @param aerospikeClient the instance that implements {@link IAerospikeClient}.
@@ -69,18 +81,18 @@ public class AerospikeCacheManager extends AbstractTransactionSupportingCacheMan
 	 */
 	public AerospikeCacheManager(IAerospikeClient aerospikeClient,
 								 AerospikeConverter aerospikeConverter,
-								 String... initialCacheNames) {
+								 List<String> initialCacheNames) {
 		this(aerospikeClient, aerospikeConverter);
 		AerospikeCacheConfiguration defaultCacheConfiguration = new AerospikeCacheConfiguration();
 
 		for (String cacheName : initialCacheNames) {
-			initialCacheConfiguration.put(cacheName, defaultCacheConfiguration);
+			initialPerCacheConfiguration.put(cacheName, defaultCacheConfiguration);
 		}
 	}
 
 	/**
 	 * Create a new {@link AerospikeCacheManager} instance -
-	 * Specifying a default cache configuration and one or more initial caches.
+	 * Specifying a default cache configuration and initial cache names.
 	 * Caches will be configured with provided default cache configuration.
 	 *
 	 * @param aerospikeClient the instance that implements {@link IAerospikeClient}.
@@ -91,39 +103,55 @@ public class AerospikeCacheManager extends AbstractTransactionSupportingCacheMan
 	public AerospikeCacheManager(IAerospikeClient aerospikeClient,
 								 AerospikeConverter aerospikeConverter,
 								 AerospikeCacheConfiguration defaultCacheConfiguration,
-								 String... initialCacheNames) {
+								 List<String> initialCacheNames) {
 		this(aerospikeClient, aerospikeConverter);
 
 		for (String cacheName : initialCacheNames) {
-			initialCacheConfiguration.put(cacheName, defaultCacheConfiguration);
+			initialPerCacheConfiguration.put(cacheName, defaultCacheConfiguration);
 		}
 	}
 
 	/**
 	 * Create a new {@link AerospikeCacheManager} instance -
-	 * Specifying the default cache configuration and a map of caches and matching configurations.
+	 * Specifying a map of caches (cache names) and matching configurations.
+	 *
+	 * @param aerospikeClient the instance that implements {@link IAerospikeClient}.
+	 * @param aerospikeConverter the instance that implements {@link AerospikeConverter}.
+	 * @param initialPerCacheConfiguration a map of caches (cache names) and matching configurations.
+	 */
+	public AerospikeCacheManager(IAerospikeClient aerospikeClient,
+								 AerospikeConverter aerospikeConverter,
+								 Map<String, AerospikeCacheConfiguration> initialPerCacheConfiguration) {
+		this(aerospikeClient, aerospikeConverter, new AerospikeCacheConfiguration(), initialPerCacheConfiguration);
+	}
+
+	/**
+	 * Create a new {@link AerospikeCacheManager} instance -
+	 * Specifying a default cache configuration and a map of caches (cache names) and matching configurations.
 	 *
 	 * @param aerospikeClient the instance that implements {@link IAerospikeClient}.
 	 * @param aerospikeConverter the instance that implements {@link AerospikeConverter}.
 	 * @param defaultCacheConfiguration the default aerospike cache configuration.
-	 * @param initialCacheConfiguration a map of caches and matching configurations.
+	 * @param initialPerCacheConfiguration a map of caches (cache names) and matching configurations.
 	 */
 	public AerospikeCacheManager(IAerospikeClient aerospikeClient,
 								 AerospikeConverter aerospikeConverter,
 								 AerospikeCacheConfiguration defaultCacheConfiguration,
-								 Map<String, AerospikeCacheConfiguration> initialCacheConfiguration) {
+								 Map<String, AerospikeCacheConfiguration> initialPerCacheConfiguration) {
 		Assert.notNull(aerospikeClient, "The aerospike client must not be null");
 		Assert.notNull(aerospikeConverter, "The aerospike converter must not be null");
+		Assert.notNull(defaultCacheConfiguration, "The default cache configuration must not be null");
+		Assert.notNull(initialPerCacheConfiguration, "The initial per cache configuration must not be null");
 		this.aerospikeClient = aerospikeClient;
 		this.aerospikeConverter = aerospikeConverter;
-		this.defaultCacheConfiguration = (defaultCacheConfiguration != null ? defaultCacheConfiguration : new AerospikeCacheConfiguration());
-		this.initialCacheConfiguration = (initialCacheConfiguration != null ? initialCacheConfiguration : new LinkedHashMap<>());
+		this.defaultCacheConfiguration = defaultCacheConfiguration;
+		this.initialPerCacheConfiguration = initialPerCacheConfiguration;
 	}
 
 	@Override
 	protected Collection<? extends Cache> loadCaches() {
 		List<AerospikeCache> caches = new ArrayList<>();
-		for (Map.Entry<String, AerospikeCacheConfiguration> entry : initialCacheConfiguration.entrySet()) {
+		for (Map.Entry<String, AerospikeCacheConfiguration> entry : initialPerCacheConfiguration.entrySet()) {
 			caches.add(createCache(entry.getKey(), entry.getValue()));
 		}
 		return caches;

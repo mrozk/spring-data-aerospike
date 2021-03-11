@@ -56,7 +56,7 @@ public class CommonTestConfig {
     @Bean
     public CacheManager cacheManagerWithTTL(AerospikeClient aerospikeClient, MappingAerospikeConverter aerospikeConverter) {
         AerospikeCacheConfiguration aerospikeCacheConfiguration = AerospikeCacheConfiguration.builder().namespace(namespace).expirationInSeconds(2).build();
-        return AerospikeCacheManager.builder().aerospikeClient(aerospikeClient).aerospikeConverter(aerospikeConverter).defaultCacheConfiguration(aerospikeCacheConfiguration).build();
+        return new AerospikeCacheManager(aerospikeClient, aerospikeConverter, aerospikeCacheConfiguration);
     }
 
     @Bean

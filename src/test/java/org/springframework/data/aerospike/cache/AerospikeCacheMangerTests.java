@@ -24,6 +24,7 @@ import org.springframework.cache.transaction.TransactionAwareCacheDecorator;
 import org.springframework.data.aerospike.BaseBlockingIntegrationTests;
 import org.springframework.data.aerospike.convert.MappingAerospikeConverter;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,7 +52,7 @@ public class AerospikeCacheMangerTests extends BaseBlockingIntegrationTests {
 
 	@Test
 	public void defaultCache() {
-		AerospikeCacheManager manager = new AerospikeCacheManager(client, converter, "default-cache");
+		AerospikeCacheManager manager = new AerospikeCacheManager(client, converter, Arrays.asList("default-cache"));
 		manager.afterPropertiesSet();
 		Cache cache = manager.getCache("default-cache");
 
@@ -64,11 +65,7 @@ public class AerospikeCacheMangerTests extends BaseBlockingIntegrationTests {
 		aerospikeCacheConfigurationMap.put("default-cache", AerospikeCacheConfiguration.builder()
 				.set("custom-set")
 				.build());
-		AerospikeCacheManager manager = AerospikeCacheManager.builder()
-				.aerospikeClient(client)
-				.aerospikeConverter(converter)
-				.initialCacheConfiguration(aerospikeCacheConfigurationMap)
-				.build();
+		AerospikeCacheManager manager = new AerospikeCacheManager(client, converter, aerospikeCacheConfigurationMap);
 		manager.afterPropertiesSet();
 		Cache cache = manager.getCache("default-cache");
 
