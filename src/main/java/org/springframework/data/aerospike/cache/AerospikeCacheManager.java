@@ -24,7 +24,6 @@ import org.springframework.cache.transaction.AbstractTransactionSupportingCacheM
 import org.springframework.cache.transaction.TransactionAwareCacheDecorator;
 import org.springframework.data.aerospike.convert.AerospikeConverter;
 import org.springframework.util.Assert;
-import reactor.util.annotation.Nullable;
 
 import java.util.*;
 
@@ -132,11 +131,7 @@ public class AerospikeCacheManager extends AbstractTransactionSupportingCacheMan
 
 	@Override
 	protected Cache getMissingCache(String name) {
-		return createCache(name, null);
-	}
-
-	private AerospikeCache createCache(String name, @Nullable AerospikeCacheConfiguration cacheConfiguration) {
-		return new AerospikeCache(name, aerospikeClient, aerospikeConverter, cacheConfiguration != null ? cacheConfiguration : defaultCacheConfiguration);
+		return createCache(name);
 	}
 
 	@Override
@@ -145,6 +140,14 @@ public class AerospikeCacheManager extends AbstractTransactionSupportingCacheMan
 			return cache;
 		}
 		return super.decorateCache(cache);
+	}
+
+	private AerospikeCache createCache(String name) {
+		return new AerospikeCache(name, aerospikeClient, aerospikeConverter, defaultCacheConfiguration);
+	}
+
+	private AerospikeCache createCache(String name, AerospikeCacheConfiguration cacheConfiguration) {
+		return new AerospikeCache(name, aerospikeClient, aerospikeConverter, cacheConfiguration);
 	}
 
 	private boolean isCacheAlreadyDecorated(Cache cache) {

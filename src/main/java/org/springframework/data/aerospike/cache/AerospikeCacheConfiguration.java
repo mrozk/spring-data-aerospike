@@ -1,28 +1,27 @@
 package org.springframework.data.aerospike.cache;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import reactor.util.annotation.Nullable;
 
 @Data
 @Builder
+@AllArgsConstructor
 public class AerospikeCacheConfiguration {
-
     protected static final String DEFAULT_NAMESPACE = "test";
     protected static final String DEFAULT_SET_NAME = "aerospike";
     protected static final int DEFAULT_EXPIRATION = -1;
 
-    private final String namespace;
-    private final String set;
-    private final int expirationInSeconds;
+    @Builder.Default
+    private String namespace = DEFAULT_NAMESPACE;
+    @Builder.Default
+    private String set = DEFAULT_SET_NAME;
+    @Builder.Default
+    private int expirationInSeconds = DEFAULT_EXPIRATION;
 
-    public AerospikeCacheConfiguration() {
-        this(DEFAULT_NAMESPACE, DEFAULT_SET_NAME, DEFAULT_EXPIRATION);
-    }
-
-    public AerospikeCacheConfiguration(@Nullable String namespace, @Nullable String set, int expirationInSeconds) {
-        this.namespace = (namespace != null ? namespace : DEFAULT_NAMESPACE);
-        this.set = (set != null ? set : DEFAULT_SET_NAME);
-        this.expirationInSeconds = expirationInSeconds;
+    public AerospikeCacheConfiguration () {
+        this.namespace = DEFAULT_NAMESPACE;
+        this.set = DEFAULT_SET_NAME;
+        this.expirationInSeconds = DEFAULT_EXPIRATION;
     }
 }
